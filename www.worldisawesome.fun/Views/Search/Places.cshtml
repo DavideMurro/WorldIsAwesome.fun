@@ -1,0 +1,89 @@
+﻿@{
+    @using www.worldisawesome.fun;
+
+    if (ViewBag.IsUserSet)
+    {
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId, isPreview = true });
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{ await Html.RenderPartialAsync("_HeadBase"); }
+    <title>Search places | World is Awesome .fun</title>
+
+    <meta name="description" content="Search places in World is Awesome .fun, WiA" />
+    <meta name="keywords"
+          content="World is Awesome, World is Awesome .fun, World, Awesome, fun, wia, wia.fun, wia fun, experience, Diary, Travel, Trip, traveller, photo, video, search, places, place, city, country">
+
+
+    <!-- external -->
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+
+    <!-- internal -->
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+    <link rel="stylesheet" href="~/css/style.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+    <script src="~/js/script_search_places.js" type="text/javascript"></script>
+</head>
+
+<body class="loading @(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "")">
+    @{ await Html.RenderPartialAsync("_Base"); }
+
+
+    @{ await Html.RenderPartialAsync("_Header"); }
+
+
+    <div class="article-container" id="places-search-list-popup">
+
+        <div class="article">
+            @if (ViewBag.IsUserSet)
+            {
+                <div class="profile-selected-container">
+                    <a href="/View/User?UserId=@ViewBag.User.Id" title="Profile picture" id="userselected-button" class="profile-selected">
+                        <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon"
+                             alt="profile picture" />
+                        <h3 class="text">@ViewBag.User.Nickname</h3>
+                    </a>
+                </div>
+            }
+
+            <div class="article-header d-flex align-items">
+                <img src="/images/icons/place_search.svg" class="article-icon" alt="search places" />
+                <h2 class="article-title flex-auto">
+                    @(ViewBag.IsUserSet ? "Places" : "Global Places")
+                </h2>
+            </div>
+            <div class="article-body">
+                <div class="search-list-container">
+                    <div class="input-container search-container" id="places-search-container">
+                        <label for="places-search" class="label">Search</label>
+                        <div class="d-flex align-items">
+                            <input type="search" placeholder="Bogotá, Bogota D.C., Colombia" id="places-search"
+                                   class="input" />
+
+                            <div id="morningnight-button" class="small icon ml-05" title="Change daytime" onclick="changeMorningNight()"></div>
+                            @if (ViewBag.IsUserSet)
+                            {
+                                <div id="changetype-button" class="small icon ml-05" title="Change view" onclick="changeView()"></div>
+                            }
+                        </div>
+                    </div>
+                    <div class="t-left">
+                        <b id="place-count"></b>
+                    </div>
+                    <div class="list-container" id="places-list-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @{ await Html.RenderPartialAsync("_Footer"); }
+</body>
+
+</html>

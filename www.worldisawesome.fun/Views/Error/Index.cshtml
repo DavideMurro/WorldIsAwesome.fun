@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>Error | World is Awesome .fun</title>
+
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+
+    <style>
+        .error-body {
+            min-height: 50%;
+            margin: 1em;
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    @{await Html.RenderPartialAsync("_Base"); }
+
+
+    @{await Html.RenderPartialAsync("_HeaderBase"); }
+
+
+    <div class="error-body">
+        <h1 class="error-title">Error @ViewBag.Error.ErrorCode</h1>
+        @if (ViewBag.Error.ErrorMessage != null && ViewBag.Error.ErrorMessage != "")
+        {
+            <p class="error-description">@ViewBag.Error.ErrorMessage</p>
+        }
+        else
+        {
+            <p class="error-description">There is an error. I don t know why, if persists, please Go Home</p>
+        }
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_Footer"); }
+</body>
+
+</html>
+

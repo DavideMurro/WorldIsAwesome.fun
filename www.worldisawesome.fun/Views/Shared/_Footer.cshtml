@@ -1,0 +1,9 @@
+﻿@using www.worldisawesome.fun;
+
+<footer>
+    @if (Context.Request.Path.Value != "/ContactUs")
+    {
+        <a href="/ContactUs" title="Contact us">Contact us</a>
+    }
+    <div>v. <b id="app-version">@AppService.Version</b></div>
+</footer>

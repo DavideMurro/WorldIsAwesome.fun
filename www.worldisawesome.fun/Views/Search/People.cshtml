@@ -1,0 +1,93 @@
+﻿@{
+    @using www.worldisawesome.fun;
+
+    if (ViewBag.IsUserSet)
+    {
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId, isPreview = true });
+    }
+    if (ViewBag.IsExperienceSet) {
+        ViewBag.FileStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetExperienceMediaStream", "View", new { mediaId = ViewBag.Experience.FileId, isPreview = true });
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{ await Html.RenderPartialAsync("_HeadBase"); }
+    <title>Search people | World is Awesome .fun</title>
+
+    <meta name="description" content="Search people in World is Awesome .fun, WiA" />
+    <meta name="keywords" content="World is Awesome, World is Awesome .fun, World, Awesome, fun, wia, wia.fun, wia fun, experience, Diary, Travel, Trip, traveller, photo, video, search, people, person, friend">
+
+
+    <!-- external -->
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+
+    <!-- internal -->
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+    <link rel="stylesheet" href="~/css/style.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+    <script src="~/js/script_search_people.js" type="text/javascript"></script>
+</head>
+
+<body class="loading @(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "")">
+    @{ await Html.RenderPartialAsync("_Base"); }
+
+
+    @{ await Html.RenderPartialAsync("_Header"); }
+
+
+    <div class="article-container" id="people-search-list-popup">
+
+        <div class="article">
+            @if (ViewBag.IsUserSet)
+            {
+                <div class="profile-selected-container">
+                    <a href="/View/User?UserId=@ViewBag.User.Id" title="Profile picture" id="userselected-button" class="profile-selected">
+                        <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon"
+                             alt="profile picture" />
+                        <h3 class="text">@ViewBag.User.Nickname</h3>
+                    </a>
+                </div>
+            }
+            @if (ViewBag.IsExperienceSet)
+            {
+                <div class="experience-selected-container">
+                    <a href="/View/Experience?ExperienceId=@ViewBag.Experience.Id" title="Experience Media" id="experienceselected-button" class="experience-selected">
+                        <img src="@ViewBag.FileStream_Preview" onerror="this.src='/images/icons/media_default.svg'" class="icon"
+                             alt="experience media" />
+                        <h3 class="text">@ViewBag.Experience.Name</h3>
+                    </a>
+                </div>
+            }
+
+            <div class="article-header d-flex align-items">
+                <img src="/images/icons/people_search.svg" class="article-icon" alt="search people" />
+                <h2 class="article-title flex-auto">
+                    @(ViewBag.IsUserSet ? "Friends" : ViewBag.IsExperienceSet ? "People for ToDo" : "Global People")
+                </h2>
+            </div>
+            <div class="article-body">
+                <div class="search-list-container">
+                    <div class="input-container search-container" id="people-search-container">
+                        <label for="people-search" class="label">Search</label>
+                        <input type="search" placeholder="John, Muhammad, Paolo..." id="people-search"
+                               class="input" />
+                    </div>
+                    <div class="t-left">
+                        <b id="user-count"></b>
+                    </div>
+                    <div class="list-container" id="people-list-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @{ await Html.RenderPartialAsync("_Footer"); }
+</body>
+
+</html>

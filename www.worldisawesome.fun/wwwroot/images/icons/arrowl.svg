@@ -1,0 +1,13 @@
+<svg id="Livello_1" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 71.59">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #303030;
+      }
+    </style>
+  </defs>
+  <title>arrowl</title>
+  <rect class="cls-1" x="214.99" y="504.51" width="18.43" height="100" rx="9.21" transform="translate(604.51 -188.82) rotate(90)"/>
+  <rect class="cls-1" x="187.11" y="541.14" width="18.43" height="54.92" rx="9.21" transform="translate(-518.76 -213.77) rotate(-45)"/>
+  <rect class="cls-1" x="187.11" y="513.78" width="18.43" height="54.92" rx="9.21" transform="translate(-221.78 543.65) rotate(-135)"/>
+</svg>

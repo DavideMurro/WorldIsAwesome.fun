@@ -1,0 +1,301 @@
+﻿@{
+    @using www.worldisawesome.fun.Models;
+    @using www.worldisawesome.fun.Controllers;
+
+
+    ViewBag.DescriptionStripped = ViewController.StripHtml(ViewBag.Place.Description);
+    ViewBag.TitleToShow = ViewBag.Place.Name;
+    ViewBag.Title = ViewBag.Place.Name + " Place | Experiences in " + ViewBag.Place.Name;
+    ViewBag.InsertExperienceLink = "/InsertExperience?PlaceId=" + ViewBag.Place.Id + (ViewBag.MorningNightEnum != MorningNightEnum.Default ? " & MorningNightEnum = " + (int)ViewBag.MorningNightEnum : "");
+
+
+    @if (!ViewBag.IsUserLogged)
+    {
+        ViewBag.InsertExperienceLink = "/Login?Redirect=" + ViewBag.InsertExperienceLink;
+    }
+
+    if (ViewBag.MorningNightEnum == MorningNightEnum.Morning)
+    {
+        ViewBag.Title += " | Morning";
+        ViewBag.TitleToShow += " [Morning]";
+    }
+    else if (ViewBag.MorningNightEnum == MorningNightEnum.Night)
+    {
+        ViewBag.Title += " | Night";
+        ViewBag.TitleToShow += " [Night]";
+    }
+    else if (ViewBag.MorningNightEnum == MorningNightEnum.Evening)
+    {
+        ViewBag.Title += " | Evening";
+        ViewBag.TitleToShow += " [Evening]";
+    }
+
+    if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+    {
+        ViewBag.Title += " | ToDo";
+        ViewBag.TitleToShow += " [ToDo]";
+    }
+
+    if (ViewBag.IsUserSet)
+    {
+        ViewBag.Title += " | " + ViewBag.User.Nickname;
+    }
+
+    if (ViewBag.Place.PictureId != null)
+    {
+        ViewBag.PictureStream = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetPlacePictureStream", "View", new { pictureId = ViewBag.Place.PictureId, isPreview = false });
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetPlacePictureStream", "View", new { pictureId = ViewBag.Place.PictureId, isPreview = true });
+    }
+    else
+    {
+        ViewBag.PictureStream = null;
+        ViewBag.PictureStream_Preview = null;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>@ViewBag.Title | World is Awesome .fun</title>
+
+    <meta name="description" content="Experiences in @ViewBag.Place.Name | @ViewBag.DescriptionStripped" />
+
+    <meta property="og:site_name" content="World is Awesome .fun" />
+    <meta property="og:title" content="@ViewBag.Title | World is Awesome .fun" />
+    <meta property="og:description" content="@ViewBag.DescriptionStripped" />
+
+    <meta property="og:type" content="article" />
+
+    <meta property="og:image" content="@ViewBag.PictureStream_Preview" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+
+    <meta property="og:url" content="/?ExperienceId=@ViewBag.Place.Id">
+    <!--<meta http-equiv="refresh" content="0; URL='/?ExperienceId=@ViewBag.Place.Id'" />-->
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="@ViewBag.PictureStream_Preview" />
+    <meta name="twitter:title" content="@ViewBag.Title | World is Awesome .fun" />
+    <meta name="twitter:description" content="@ViewBag.DescriptionStripped" />
+
+
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+</head>
+
+<body class="@(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "") @(ViewBag.MorningNightEnum != MorningNightEnum.Default ? ViewBag.MorningNightEnum.ToString().ToLower() : "") @(ViewBag.ViewTypeEnum == ViewTypeEnum.MyExperiences ? "ViewMyPlaces" : ViewBag.ViewTypeEnum == ViewTypeEnum.GlobalExperiences ? "ViewGlobalPlaces" : ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo ? "ViewExperiencesToDo" : ViewBag.ViewTypeEnum == ViewTypeEnum.Friends ? "ViewFriends" : "")">
+    @{await Html.RenderPartialAsync("_Base"); }
+
+
+    @{await Html.RenderPartialAsync("_Header"); }
+
+
+    <div class="article-container" id="place-popup">
+
+        <div class="article">
+            <div class="article-body">
+                @if (ViewBag.IsUserSet)
+                {
+                    ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId, isPreview = true });
+
+
+                    <div class="profile-selected-container">
+                        <a href="/View/User?UserId=@ViewBag.User.Id" class="profile-selected">
+                            <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile picture" />
+                            <h3 class="text">@ViewBag.User.Nickname</h3>
+                        </a>
+                    </div>
+                }
+
+
+                <div class="d-flex" id="place-title">
+                    <h1 class="text flex-auto m-0">@ViewBag.TitleToShow</h1>
+                </div>
+
+                @if (!ViewBag.IsUserSet)
+                {
+                    <div id="place-picture" class="mt-1">
+                        @if (ViewBag.PictureStream != null)
+                        {
+                            <img src="@ViewBag.PictureStream" onerror="this.src='/images/icons/place_picture_default.svg'; this.classList.add('default')" alt="place picture" />
+                        }
+                        else
+                        {
+                            <img src="/images/icons/place_picture_default.svg" alt="place picture" class="default" />
+                        }
+                    </div>
+
+                    @if (ViewBag.Place.Description != null)
+                    {
+                        <div id="place-description" class="mt-1">
+                            @Html.Raw(ViewBag.Place.Description)
+
+                            @if (ViewBag.Place.Description.Length > 400)
+                            {
+                                <button class="more-button" onclick="document.querySelector('#place-popup #place-description').classList.add('open')">...More</button>
+                            }
+                        </div>
+                    }
+                }
+
+                @if (ViewBag.IsUserLogged)
+                {
+                    <div class="mt-1">
+                        <a href="@ViewBag.InsertExperienceLink">
+                            <img src="~/images/icons/experiencenew.svg" alt="experience new" class="t-size" /> Insert a new Experience here!
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <div class="article-container experience-view-small" id="experience-view-popup">
+        <div class="subtitle">
+            <div class="text">
+                <h2>Experiences</h2>
+            </div>
+
+            <div>
+                <a href="/View/Place?PlaceId=@ViewBag.Place.Id@(ViewBag.MorningNightEnum == MorningNightEnum.Morning ? "&MorningNightEnum=2" : ViewBag.MorningNightEnum == MorningNightEnum.Night ? "&MorningNightEnum=3" : ViewBag.MorningNightEnum == MorningNightEnum.Evening ? "" : "&MorningNightEnum=1")@(ViewBag.ViewTypeEnum != ViewTypeEnum.Default ? "&ViewTypeEnum="+(int)ViewBag.ViewTypeEnum : "")@(ViewBag.IsUserSet ? "&UserId="+@ViewBag.User.Id : "")" id="morningnight-button" class="icon-action-link small" title="Change daytime">
+                    <span class="text"></span>
+                    <div class="icon" title="Change daytime"></div>
+                </a>
+
+                @if (ViewBag.IsUserSet)
+                {
+                    <a href="/View/Place?PlaceId=@(ViewBag.Place.Id)@(ViewBag.MorningNightEnum != MorningNightEnum.Default ? "&MorningNightEnum=" + (int)ViewBag.MorningNightEnum : "")&ViewTypeEnum=@(ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo ? 1 : 3)@(ViewBag.IsUserSet ? "&UserId=" + @ViewBag.User.Id : "")" id="changetype-button" class="icon-action-link small" title="Change view">
+                        <span class="text"></span>
+                        <div class="icon" title="Change view"></div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        @if (ViewBag.ExperienceList != null && ViewBag.ExperienceList.Count > 0)
+        {
+
+            @foreach (var Experience in ViewBag.ExperienceList)
+            {
+                ViewBag.FileStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetExperienceMediaStream", "View", new { mediaId = Experience.FileId, isPreview = true });
+
+                ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = Experience.UserProfilePhotoFileId, isPreview = true });
+
+                ViewBag.ExperienceLink = "/View/Experience?ExperienceId=" + Experience.Id + "&Redirect=/View/User?UserId=" + Experience.UserId;
+
+
+                <div class="article @(Experience.IsMine ? "ismine" : "") @(Experience.IsToDo ? "istodo" : "")" id="experience-view">
+                    <a href="@ViewBag.ExperienceLink" class="article-header d-flex align-items">
+                        @if (Experience.MorningNightEnum == MorningNightEnum.Morning)
+                        {
+                            <img src="~/images/icons/sun.svg" id="experience-view-morningnight" class="article-icon" alt="morning" title="Morning" />
+                        }
+                        else if (Experience.MorningNightEnum == MorningNightEnum.Night)
+                        {
+                            <img src="~/images/icons/star.svg" id="experience-view-morningnight" class="article-icon" alt="night" title="Night" />
+                        }
+                        else if (Experience.MorningNightEnum == MorningNightEnum.Evening)
+                        {
+                            <img src="~/images/icons/sunset.svg" id="experience-view-morningnight" class="article-icon" alt="evening" title="Evening" />
+                        }
+                        <h2 id="experience-view-name" class="flex-auto article-title">@Experience.Name</h2>
+                    </a>
+
+                    <div class="article-body">
+                        @if (!ViewBag.IsUserSet)
+                        {
+                            <a href="/View/User?UserId=@Experience.UserId" id="experience-view-user">
+                                <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile picture" />
+                                <span class="text">@Experience.UserNickname</span>
+                            </a>
+                        }
+
+
+                        <a href="@ViewBag.ExperienceLink" id="experience-view-media-container">
+                            @if (Experience.FileId == null || Experience.FileType == null)
+                            {
+                                <img src="/images/icons/media_default.svg" class="experience-view-media active" id="experience-view-media-img" alt="experience media"
+                                     draggable="false" />
+                            }
+                            else if (Experience.FileType.StartsWith("image/"))
+                            {
+                                <img src="@ViewBag.FileStream_Preview" onerror="this.src='/images/icons/media_default.svg'" class="experience-view-media active" id="experience-view-media-img" alt="experience media"
+                                     draggable="false" />
+                            }
+                            else if (Experience.FileType.StartsWith("video/"))
+                            {
+                                <video src="@ViewBag.FileStream_Preview" class="experience-view-media active" controls id="experience-view-media-video" draggable="false">
+                                    Your browser does not support the video tag.
+                                </video>
+                            }
+                            else if (Experience.FileType.StartsWith("audio/"))
+                            {
+                                <audio src="@ViewBag.FileStream_Preview" class="experience-view-media active" controls id="experience-view-media-audio" draggable="false">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            }
+                        </a>
+
+                        <div class="m-05"></div>
+
+                        <div class="f-right" id="experience-view-share-container">
+                            @if (Experience.PrivacyLevel == PrivacyLevelEnum.Private)
+                            {
+                                <small class="privacylevel-tag">Private</small>
+                            }
+                            else if (Experience.PrivacyLevel == PrivacyLevelEnum.Confidential)
+                            {
+                                <small class="privacylevel-tag">Only friends</small>
+                            }
+                        </div>
+
+                        <small class="d-block" id="experience-view-place"><a href="/View/Place?PlaceId=@Experience.PlaceId"><img src="/images/icons/place.svg" alt="all places" class="t-size" /> @Experience.PlaceName</a></small>
+                        <small class="d-block" id="experience-view-datetime">@(Experience.Time != null ? Experience.Date + ", " + Experience.Time : Experience.Date )</small>
+
+                        <div class="fc-both" id="experience-view-description">@Html.Raw(Experience.Description) <a href="@ViewBag.ExperienceLink" class="more-button">...More</a></div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (ViewBag.ViewTypeEnum == ViewTypeEnum.MyExperiences)
+            {
+                <div class="article">There is no <b>Experiences</b> in this place! You could be the first one!</div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.GlobalExperiences)
+            {
+                <div class="article">There is no <b>Experiences</b> in this place! You could be the first one!</div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+            {
+                <div class="article">There is no <b>Experiences ToDo</b> in this place!! Try to look if you find something in <a href="/View/Place?PlaceId=@ViewBag.Place.Id">@ViewBag.Place.Name</a></div>
+            }
+            else
+            {
+                <div class="article">There is no <b>Experiences</b> in this place!</div>
+            }
+        }
+
+        <a href="@ViewBag.InsertExperienceLink" class="button float">
+            @Html.Raw(ViewBag.IsUserLogged ? "Insert " : "<b>Login!</b> and insert ") a new <b><img src="~/images/icons/experiencemorning.svg" alt="experience" class="t-size" /> Experience</b> in this <b><img src="~/images/icons/place.svg" alt="place" class="t-size" /> Place</b>
+        </a>
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_Footer"); }
+
+
+    @{await Html.RenderPartialAsync("_ShareFacebook"); }
+    @{await Html.RenderPartialAsync("_ShareTwitter"); }
+</body>
+
+</html>
+

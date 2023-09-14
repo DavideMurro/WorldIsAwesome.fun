@@ -1,0 +1,840 @@
+﻿@{
+    @using www.worldisawesome.fun.Models;
+    @using www.worldisawesome.fun.Controllers;
+
+
+    if (ViewBag.User.ProfilePhotoFileId != null)
+    {
+        ViewBag.PictureStream = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId });
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId, isPreview = true });
+    }
+    else
+    {
+        ViewBag.PictureStream = null;
+        ViewBag.PictureStream_Preview = null;
+    }
+
+
+    ViewBag.ShareLink_Facebook = "https://www.facebook.com/sharer/sharer.php?u=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + ViewBag.User.Id;
+    ViewBag.ShareLink_Twitter = "https://twitter.com/intent/tweet?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + ViewBag.User.Id;
+    ViewBag.ShareLink_Whatsapp = "whatsapp://send?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + ViewBag.User.Id;
+
+
+    ViewBag.Title = ViewBag.User.Nickname + " Profile";
+    ViewBag.DescriptionStripped = ViewController.StripHtml(ViewBag.User.Description);
+    ViewBag.ExperienceTitleToShow = "";
+    ViewBag.ExperienceDescriptionToShow = "";
+    ViewBag.PlaceTitleToShow = "";
+    ViewBag.PlaceDescriptionToShow = "";
+    ViewBag.FriendTitleToShow = "";
+    ViewBag.FriendDescriptionToShow = "";
+
+    if (ViewBag.IsMine)
+    {
+        ViewBag.ExperienceTitleToShow += "My Experiences";
+        ViewBag.PlaceTitleToShow += "My Places";
+        ViewBag.FriendTitleToShow += "My Friends";
+
+        ViewBag.ExperienceDescriptionToShow += "Some of Experiences that <b>You</b>";
+        ViewBag.PlaceDescriptionToShow += "Some of Places that <b>You</b>";
+        ViewBag.FriendDescriptionToShow += "Some of <b>Your</b> Friends.";
+    }
+    else
+    {
+        ViewBag.ExperienceTitleToShow += ViewBag.User.Nickname + "'s Experiences";
+        ViewBag.PlaceTitleToShow += ViewBag.User.Nickname + "'s Places";
+        ViewBag.FriendTitleToShow += ViewBag.User.Nickname + "'s Friends";
+
+        ViewBag.ExperienceDescriptionToShow += "Some of Experiences that <b>" + ViewBag.User.Nickname + "</b>";
+        ViewBag.PlaceDescriptionToShow += "Some of Places that <b>" + ViewBag.User.Nickname + "</b>";
+        ViewBag.FriendDescriptionToShow += "Some of <b>" + ViewBag.User.Nickname + "</b>'s Friends.";
+    }
+
+    if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+    {
+        ViewBag.Title += " | ToDo";
+        ViewBag.ExperienceTitleToShow += " [ToDo]";
+        ViewBag.PlaceTitleToShow += " [ToDo]";
+
+        ViewBag.ExperienceDescriptionToShow += " want <b>ToDo</b>.";
+        ViewBag.PlaceDescriptionToShow += " want <b>ToDo</b>.";
+    }
+    else
+    {
+        ViewBag.ExperienceDescriptionToShow += " did.";
+        ViewBag.PlaceDescriptionToShow += " visited.";
+    }
+
+    if (ViewBag.MorningNightEnum == MorningNightEnum.Morning)
+    {
+        ViewBag.Title += " | Morning";
+        ViewBag.ExperienceTitleToShow += " [Morning]";
+        ViewBag.PlaceTitleToShow += " [Morning]";
+    }
+    else if (ViewBag.MorningNightEnum == MorningNightEnum.Night)
+    {
+        ViewBag.Title += " | Night";
+        ViewBag.ExperienceTitleToShow += " [Night]";
+        ViewBag.PlaceTitleToShow += " [Night]";
+    }
+    else if (ViewBag.MorningNightEnum == MorningNightEnum.Evening)
+    {
+        ViewBag.Title += " | Evening";
+        ViewBag.ExperienceTitleToShow += " [Evening]";
+        ViewBag.PlaceTitleToShow += " [Evening]";
+    }
+
+    ViewBag.ExperienceDescriptionToShow += " <a href='/Search/Experiences?UserId=" + ViewBag.User.Id + "'>See all Experiences &amp; Drafts</a>";
+    ViewBag.PlaceDescriptionToShow += " <a href='/Search/Places?UserId=" + ViewBag.User.Id + "'>See all Places</a>";
+    ViewBag.FriendDescriptionToShow += " <a href='/Search/People?ViewTypeEnum=" + (int)ViewTypeEnum.Friends + "&UserId=" + ViewBag.User.Id + "'>See all Friends &amp; Requests</a>";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>@ViewBag.Title | World is Awesome .fun</title>
+
+    <meta name="description" content="Profile of @ViewBag.User.Nickname | @ViewBag.DescriptionStripped" />
+
+    <meta property="og:site_name" content="World is Awesome .fun" />
+    <meta property="og:title" content="@ViewBag.User.Nickname | World is Awesome .fun" />
+    <meta property="og:description" content="@ViewBag.DescriptionStripped" />
+
+    <meta property="og:type" content="article" />
+    <meta property="article:author" content="@ViewBag.User.Name @ViewBag.User.Surname">
+    <meta property="article:publisher" content="@ViewBag.User.Name @ViewBag.User.Surname">
+
+    <meta property="og:image" content="@ViewBag.PictureStream_Preview" />
+    <meta property="og:image:type" content="@ViewBag.User.ProfilePhotoFileType" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <!-- MS Tile - for Microsoft apps-->
+    <meta name="msapplication-TileImage" content="@ViewBag.User.ProfilePhotoFileType">
+
+    <meta property="og:url" content="/?UserId=@ViewBag.User.Id">
+    <!--<meta http-equiv="refresh" content="0; URL='/?UserId=@ViewBag.User.Id'" />-->
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="@ViewBag.PictureStream_Preview" />
+    <meta name="twitter:title" content="@ViewBag.User.Nickname | World is Awesome .fun" />
+    <meta name="twitter:description" content="@ViewBag.DescriptionStripped" />
+
+
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+    <script src="~/lib/hammerjs/hammer.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+    <script src="~/js/script_view_user.js" type="text/javascript"></script>
+</head>
+
+<body class="@(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "") @(ViewBag.MorningNightEnum != MorningNightEnum.Default ? ViewBag.MorningNightEnum.ToString().ToLower() : "") @(ViewBag.ViewTypeEnum == ViewTypeEnum.MyExperiences ? "ViewMyPlaces" : ViewBag.ViewTypeEnum == ViewTypeEnum.GlobalExperiences ? "ViewGlobalPlaces" : ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo ? "ViewExperiencesToDo" : ViewBag.ViewTypeEnum == ViewTypeEnum.Friends ? "ViewFriends" : "")">
+    @{await Html.RenderPartialAsync("_Base"); }
+
+    @{await Html.RenderPartialAsync("_Header"); }
+
+
+    <div class="article-container" id="user-profile-view-popup">
+        <div class="article" id="user-profile-view">
+            <div class="article-header d-flex align-items">
+                <div class="flex-auto">
+                    <h1 class="article-title" id="user-profile-view-nickname">@ViewBag.User.Nickname</h1>
+                    <small id="user-profile-view-completename">@ViewBag.User.Name @ViewBag.User.Surname</small>
+                </div>
+                @if (ViewBag.FriendCurrentUser != null && ViewBag.FriendCurrentUser.StatusEnum == UserFriendStatusEnum.Accepted)
+                {
+                    <img src="/images/icons/friend_active.svg" alt="remove friend" title="Remove Friend" class="icon" id="user-view-remove-friend-button" onclick="removeFriendClick()" />
+                }
+            </div>
+            <div class="article-body">
+                <div id="user-option-list-container">
+                    <div id="user-profile-view-picture-container">
+                        @if (ViewBag.PictureStream != null)
+                        {
+                            <img src="@ViewBag.PictureStream" onerror="this.src = '/images/icons/user_avatar_default.svg'; this.classList.add('default')" id="user-profile-view-picture" alt="profile picture" />
+                        }
+                        else
+                        {
+                            <img src="/images/icons/user_avatar_default.svg" id="user-profile-view-picture" class="default" alt="profile picture" />
+                        }
+                    </div>
+
+                    <div class="m-05"></div>
+
+                    <div class="f-right" id="user-profile-view-share-container">
+                        @if (ViewBag.User.StatusEnum == UserStatusEnum.Default)
+                        {
+                            <b class="status-tag warning-color">Not activated</b>
+                        }
+                        else if (ViewBag.User.StatusEnum == UserStatusEnum.Banned)
+                        {
+                            <b class="status-tag error-color">Banned</b>
+                        }
+                        else
+                        {
+                            <a href="@ViewBag.ShareLink_Facebook" class='fb-share-button share-button' id="user-profile-view-share-fb" target="_blank">
+                                <img src="~/images/icons/facebook.svg" alt="facebook" title="Share on Facebook">
+                            </a>
+                            <a href="@ViewBag.ShareLink_Twitter" class="tw-share-button share-button" id="user-profile-view-share-twitter"
+                               target="_blank">
+                                <img src="~/images/icons/twitter.svg" alt="twitter" title="Share on Twitter">
+                            </a>
+                            <a href="@ViewBag.ShareLink_Whatsapp" class='wa-share-button share-button' id="user-profile-view-share-wa">
+                                <img src="~/images/icons/whatsapp.svg" alt="whatsapp" title="Share on WhatsApp">
+                            </a>
+                        }
+                    </div>
+
+                    @if (ViewBag.User.ResidencePlaceName != null)
+                    {
+                        <small class="d-block" id="user-profile-view-residenceplace"><b>Residence:</b> @ViewBag.User.ResidencePlaceName</small>
+                    }
+                    @if (ViewBag.User.BirthDate != null)
+                    {
+                        <small class="d-block" id="user-profile-view-birthdate"><b>Birth date:</b> @ViewBag.User.BirthDate</small>
+                    }
+                    @if (ViewBag.User.Description != null)
+                    {
+                        <div class="fc-both" id="user-profile-view-description">
+                            <small class="d-block"><b>Description:</b></small>
+                            @Html.Raw(ViewBag.User.Description)
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="article-body">
+                @if (ViewBag.IsUserLogged && !ViewBag.IsMine && ViewBag.User.StatusEnum == UserStatusEnum.Activated)
+                {
+                    if (ViewBag.FriendCurrentUser == null)
+                    {
+                        <button class="button user-option-item large" id="add-friend-button" onclick="addFriendClick()">
+                            <img src="/images/icons/friend_add.svg" alt="add friend"
+                                 title="Add Friend" class="icon first" />
+                            Add Friend
+                        </button>
+                    }
+                    else if (ViewBag.FriendCurrentUser != null && ViewBag.FriendCurrentUser.StatusEnum == UserFriendStatusEnum.Accepted)
+                    {
+                        <button class="button user-option-item large success" id="remove-friend-button" onclick="removeFriendClick()">
+                            <img src="/images/icons/friend_active.svg" alt="remove friend"
+                                 title="Remove Friend" class="icon first" />
+                            Friends!
+                        </button>
+                    }
+                    else if (ViewBag.FriendCurrentUser != null && ViewBag.FriendCurrentUser.StatusEnum == UserFriendStatusEnum.Pending)
+                    {
+                        if (ViewBag.IsUserLogged && ViewBag.FriendCurrentUser.IsConfirmable)
+                        {
+                            <div class="d-flex w-100-p mt-05 mb-05">
+                                <button class="button user-option-item flex-auto success mr-05" id="pending-accept-friend" onclick="confirmFriendClick()">
+                                    <img src="/images/icons/friend_add.svg" alt="accept friend request"
+                                         title="Accept Friend Request" class="icon first" />
+                                    Accept friend request
+                                </button>
+                                <button class="button user-option-item flex-auto error" id="pending-friend" onclick="removeFriendClick()">
+                                    <img src="/images/icons/friend_remove.svg" alt="decline friend request"
+                                         title="Decline Friend request" class="icon first" />
+                                    Decline friend request
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="button user-option-item large info" id="pending-decline-friend" onclick="removeFriendClick()">
+                                <img src="/images/icons/friend_pending.svg" alt="Pending friend"
+                                     title="Pending Friend" class="icon first" />
+                                Pending request
+                            </button>
+                        }
+                    }
+
+                    <button class="button user-option-item large" id="contact-me-button" onclick="contactmeClick()">
+                        <img src="/images/icons/mail.svg" alt="contact me"
+                             title="Contact me" class="icon first" />
+                        Contact Me
+                    </button>
+                }
+                <a href="/?UserId=@ViewBag.User.Id" class="button user-option-item large" id="world-profile-button">
+                    <img src="/images/logo_icon.svg" alt="world is awesome"
+                         title="World profile" class="icon first" />
+                    World profile
+                </a>
+            </div>
+
+            @if (ViewBag.IsMine)
+            {
+                <div class="article-footer">
+
+                    <a href="/PrivacyPolicy" target="_blank" class="button user-option-item">
+                        <img src="/images/icons/document.svg" alt="privacy policy &amp; terms"
+                             title="Privacy policy &amp; terms" class="icon first" />
+                        Privacy policy &amp; terms
+                    </a>
+
+                    <a href="/EditUser" class="button user-option-item">
+                        <img src="/images/icons/edit.svg" title="Edit personal information" class="icon first" />
+                        Edit personal information
+                    </a>
+                    <button class="button user-option-item" onclick="openProfileUserPopup_editMail()">
+                        <img src="/images/icons/edit.svg" alt="change mail" title="Change mail" class="icon first" />
+                        Change mail
+                    </button>
+                    <button class="button user-option-item" onclick="openProfileUserPopup_editPassword()">
+                        <img src="/images/icons/edit.svg" alt="change password" title="Change password"
+                             class="icon first" />
+                        Change password
+                    </button>
+                    <button class="button user-option-item" onclick="logout()">
+                        <img src="/images/icons/logout_avatar_default.svg" alt="logout" title="Logout" class="icon first" />
+                        Logout
+                    </button>
+                    <button class="button user-option-item warning" onclick="window.location.href='/ContactUs'">
+                        <img src="/images/icons/delete.svg" alt="delete account" title="Delete account"
+                             class="icon first" />
+                        Delete the account
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div class="article-container place-view-small mt-2" id="place-view-popup">
+        <div class="subtitle">
+            <div class="text">
+                <h2>@ViewBag.PlaceTitleToShow</h2>
+                @*<h4>Total: @ViewBag.PlaceList.Count</h4>*@
+                @if (ViewBag.PlaceList != null && ViewBag.PlaceList.Count > 0)
+                {
+                    <p>@Html.Raw(ViewBag.PlaceDescriptionToShow)</p>
+                }
+            </div>
+
+            <div>
+                <a href="/View/User?UserId=@ViewBag.User.Id@(ViewBag.MorningNightEnum == MorningNightEnum.Morning ? "&MorningNightEnum=2" : ViewBag.MorningNightEnum == MorningNightEnum.Night ? "&MorningNightEnum=3" : ViewBag.MorningNightEnum == MorningNightEnum.Evening ? "" : "&MorningNightEnum=1")@(ViewBag.ViewTypeEnum != ViewTypeEnum.Default ? "&ViewTypeEnum="+(int)ViewBag.ViewTypeEnum : "")" id="morningnight-button" class="icon-action-link small" title="Change daytime">
+                    <span class="text"></span>
+                    <div class="icon" title="Change daytime"></div>
+                </a>
+
+                <a href="/View/User?UserId=@(ViewBag.User.Id)@(ViewBag.MorningNightEnum != MorningNightEnum.Default ? "&MorningNightEnum=" + (int)ViewBag.MorningNightEnum : "")@(ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo ? "&ViewTypeEnum=1" : "&ViewTypeEnum=3")" id="changetype-button" class="icon-action-link small" title="Change view">
+                    <span class="text"></span>
+                    <div class="icon" title="Change view"></div>
+                </a>
+
+            </div>
+        </div>
+
+        @if (ViewBag.PlaceList != null && ViewBag.PlaceList.Count > 0)
+        {
+            @foreach (var Place in ViewBag.PlaceList)
+            {
+                ViewBag.ShareLink_Facebook = "https://www.facebook.com/sharer/sharer.php?u=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Place?PlaceId=" + Place.Id;
+                ViewBag.ShareLink_Twitter = "https://twitter.com/intent/tweet?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Place?PlaceId=" + Place.Id;
+                ViewBag.ShareLink_Whatsapp = "whatsapp://send?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Place?PlaceId=" + Place.Id;
+
+                //ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetPlacePictureStream", "View", new { pictureId = Place.PictureId, isPreview = true });
+                ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetDefaultPlacePictureStream", "View", new { placeId = Place.Id, isPreview = true });
+
+                ViewBag.PlaceLink = "/View/Place?PlaceId=" + Place.Id + "&UserId=" + ViewBag.User.Id;
+                if (ViewBag.MorningNightEnum != MorningNightEnum.Default) { ViewBag.PlaceLink += "&MorningNightEnum=" + (int)ViewBag.MorningNightEnum; }
+                if (ViewBag.ViewTypeEnum != ViewTypeEnum.Default) { ViewBag.PlaceLink += "&ViewTypeEnum=" + (int)ViewBag.ViewTypeEnum; }
+
+
+                <div class="article media-article" id="place-view">
+                    <a href="@ViewBag.PlaceLink" class="article-media-container">
+                        <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/place_picture_default.svg'; this.classList.add('default')" class="article-media" alt="place picture" />
+                    </a>
+                    <div class="article-body">
+                        <a href="@ViewBag.PlaceLink" class="place-view-name"><h3 class="m-0">@Place.Name</h3></a>
+                        @*<h4 id="place-view-total-container">Experiences: @Place.Experience_Count</h4>*@
+                        @*<div id="place-view-share-container">
+                                <a href="@ViewBag.ShareLink_Facebook" class='fb-share-button share-button' id="place-view-share-fb" target="_blank">
+                                    <img src="~/images/icons/facebook.svg" alt="facebook" title="Share on Facebook">
+                                </a>
+                                <a href="@ViewBag.ShareLink_Twitter" class="twitter-share-button share-button" id="place-view-share-twitter"
+                                   target="_blank">
+                                    <img src="~/images/icons/twitter.svg" alt="twitter" title="Share on Twitter">
+                                </a>
+                                <a href="@ViewBag.ShareLink_Whatsapp" class='wa-share-button share-button' id="place-view-share-wa">
+                                    <img src="~/images/icons/whatsapp.svg" alt="whatsapp" title="Share on WhatsApp">
+                                </a>
+                            </div>*@
+                        @if (Place.Description != null && Place.Description != "")
+                        {
+                            <div class="place-view-description">
+                                @Html.Raw(Place.Description)
+                                <a href="@ViewBag.PlaceLink" class="more-button">...More</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <a href="/Search/Places?UserId=@ViewBag.User.Id" class="button float">
+                See all <b><img src="/images/icons/place.svg" alt="all places" class="t-size" /> Places</b>
+            </a>
+        }
+        else
+        {
+
+            if (ViewBag.ViewTypeEnum == ViewTypeEnum.MyExperiences)
+            {
+                <div class="article">There is no <b>Places</b> here! What a boring user!</div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.GlobalExperiences)
+            {
+                <div class="article">There is no <b>Places</b> here! You can be the first one!</div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+            {
+                <div class="article">There is no <b>Places ToDo</b>!! Try to look if you find something in <a href="/">Global places</a></div>
+            }
+            else
+            {
+                <div class="article">There is no <b>Places</b> here!</div>
+            }
+        }
+    </div>
+
+
+    <div class="article-container experience-view-small mt-2" id="experience-view-popup">
+        <div class="subtitle">
+            <div class="text">
+                <h2>@ViewBag.ExperienceTitleToShow</h2>
+                @*<h4>Total: @ViewBag.ExperienceList.Count</h4>*@
+                @if (ViewBag.ExperienceList != null && ViewBag.ExperienceList.Count > 0)
+                {
+                    <p>@Html.Raw(ViewBag.ExperienceDescriptionToShow)</p>
+                }
+            </div>
+
+            @if (ViewBag.IsMine)
+            {
+                <a href="/InsertExperience@(ViewBag.MorningNightEnum != MorningNightEnum.Default ? "?MorningNightEnum="+(int)ViewBag.MorningNightEnum : "")" id="newexperience-us-button" class="icon-action-link">
+                    <span class="text">Insert Experience</span>
+                    <img src="/images/icons/experiencenew.svg" class="icon" alt="new experience" title="New Experience">
+                </a>
+            }
+        </div>
+
+        @if (ViewBag.ExperienceList != null && ViewBag.ExperienceList.Count > 0)
+        {
+            @foreach (var Experience in ViewBag.ExperienceList)
+            {
+                ViewBag.FileStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetExperienceMediaStream", "View", new { mediaId = Experience.FileId, isPreview = true });
+
+                ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = Experience.UserProfilePhotoFileId, isPreview = true });
+
+                ViewBag.ShareLink_Facebook = "https://www.facebook.com/sharer/sharer.php?u=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + Experience.Id;
+                ViewBag.ShareLink_Twitter = "https://twitter.com/intent/tweet?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + Experience.Id;
+                ViewBag.ShareLink_Whatsapp = "whatsapp://send?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + Experience.Id;
+
+                ViewBag.ExperienceLink = "/View/Experience?ExperienceId=" + Experience.Id + "&Redirect=/View/User?UserId=" + Experience.UserId;
+
+
+                <div class="article @(Experience.IsMine ? "ismine" : "") @(Experience.IsToDo ? "istodo" : "")" id="experience-view">
+                    <a href="@ViewBag.ExperienceLink" class="article-header d-flex align-items">
+                        @if (Experience.MorningNightEnum == MorningNightEnum.Morning)
+                        {
+                            <img src="~/images/icons/sun.svg" id="experience-view-morningnight" class="article-icon" alt="morning" title="Morning" />
+                        }
+                        else if (Experience.MorningNightEnum == MorningNightEnum.Night)
+                        {
+                            <img src="~/images/icons/star.svg" id="experience-view-morningnight" class="article-icon" alt="night" title="Night" />
+                        }
+                        else if (Experience.MorningNightEnum == MorningNightEnum.Evening)
+                        {
+                            <img src="~/images/icons/sunset.svg" id="experience-view-morningnight" class="article-icon" alt="evening" title="Evening" />
+                        }
+                        <h3 id="experience-view-name" class="flex-auto article-title">@Experience.Name</h3>
+                    </a>
+
+                    <div class="article-body">
+                        @if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+                        {
+                            <a href="/View/User?UserId=@Experience.UserId" id="experience-view-user">
+                                <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile picture" />
+                                <span class="text">@Experience.UserNickname</span>
+                            </a>
+                        }
+                        <a href="@ViewBag.ExperienceLink" id="experience-view-media-container">
+                            @if (Experience.FileType.StartsWith("image/"))
+                            {
+                                <img src="@ViewBag.FileStream_Preview" onerror="this.src='/images/icons/media_default.svg'" class="experience-view-media active" id="experience-view-media-img" alt="experience media"
+                                     draggable="false" />
+                            }
+                            else if (Experience.FileType.StartsWith("video/"))
+                            {
+                                <video src="@ViewBag.FileStream_Preview" class="experience-view-media active" controls id="experience-view-media-video" draggable="false">
+                                    Your browser does not support the video tag.
+                                </video>
+                            }
+                            else if (Experience.FileType.StartsWith("audio/"))
+                            {
+                                <audio src="@ViewBag.FileStream_Preview" class="experience-view-media active" controls id="experience-view-media-audio" draggable="false">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            }
+                        </a>
+
+                        <div class="m-05"></div>
+
+                        <div class="f-right" id="experience-view-share-container">
+                            @if (Experience.PrivacyLevel == PrivacyLevelEnum.Private)
+                            {
+                                <small class="privacylevel-tag">Private</small>
+                            }
+                            else if (Experience.PrivacyLevel == PrivacyLevelEnum.Confidential)
+                            {
+                                <small class="privacylevel-tag">Only friends</small>
+                            }
+                        </div>
+
+                        <small class="d-block" id="experience-view-place"><a href="/View/Place?PlaceId=@Experience.PlaceId"><img src="/images/icons/place.svg" alt="all places" class="t-size" /> @Experience.PlaceName</a></small>
+                        <small class="d-block" id="experience-view-datetime">@(Experience.Time != null ? Experience.Date + ", " + Experience.Time : Experience.Date )</small>
+
+                        <div class="fc-both" id="experience-view-description">@Html.Raw(Experience.Description) <a href="@ViewBag.ExperienceLink" class="more-button">...More</a></div>
+                    </div>
+                </div>
+            }
+
+            <a href="/Search/Experiences?UserId=@ViewBag.User.Id" class="button float">
+                See all <b><img src="/images/icons/experiencemorning.svg" alt="all experiences" class="t-size" /> Experiences &amp; Drafts</b>
+            </a>
+        }
+        else
+        {
+
+            if (ViewBag.ViewTypeEnum == ViewTypeEnum.MyExperiences)
+            {
+                <div class="article">There is no <b>Experiences</b> here! What a boring user! Try to look in <a href="/Search/Experiences?UserId=@ViewBag.User.Id">Experiences &amp; Drafts</a></div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.GlobalExperiences)
+            {
+                <div class="article">There is no <b>Experiences</b> here! You can be the first one!</div>
+            }
+            else if (ViewBag.ViewTypeEnum == ViewTypeEnum.ExperiencesToDo)
+            {
+                <div class="article">There is no <b>Experiences ToDo</b>!! Try to look if you find something in <a href="/Search/Experiences">Global Experiences</a></div>
+            }
+            else
+            {
+                <div class="article">There is no <b>Experiences</b> here! Try to look in <a href="/Search/Experiences?UserId=@ViewBag.User.Id">Experiences &amp; Drafts</a></div>
+            }
+        }
+    </div>
+
+
+    <div class="article-container user-view-small mt-2" id="friend-view-popup">
+        <div class="subtitle">
+            <div class="text">
+                <h2>@ViewBag.FriendTitleToShow</h2>
+                @*<h4>Total: @ViewBag.PlaceList.Count</h4>*@
+                @if (ViewBag.FriendList != null && ViewBag.FriendList.Count > 0)
+                {
+                    <p>@Html.Raw(ViewBag.FriendDescriptionToShow)</p>
+                }
+            </div>
+        </div>
+
+        @if (ViewBag.FriendList != null && ViewBag.FriendList.Count > 0)
+        {
+            @foreach (var Friend in ViewBag.FriendList)
+            {
+                ViewBag.ShareLink_Facebook = "https://www.facebook.com/sharer/sharer.php?u=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + Friend.Id;
+                ViewBag.ShareLink_Twitter = "https://twitter.com/intent/tweet?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + Friend.Id;
+                ViewBag.ShareLink_Whatsapp = "whatsapp://send?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/User?UserId=" + Friend.Id;
+
+                if (Friend.ProfilePhotoFileId != null)
+                {
+                    ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = Friend.ProfilePhotoFileId, isPreview = true });
+                }
+                else
+                {
+                    ViewBag.PictureStream_Preview = null;
+                }
+
+                ViewBag.FriendLink = "/View/User?UserId=" + Friend.Id;
+                if (ViewBag.MorningNightEnum != MorningNightEnum.Default) { ViewBag.FriendLink += "&MorningNightEnum=" + (int)ViewBag.MorningNightEnum; }
+                if (ViewBag.ViewTypeEnum != ViewTypeEnum.Default) { ViewBag.FriendLink += "&ViewTypeEnum=" + (int)ViewBag.ViewTypeEnum; }
+
+
+                <div class="article media-article" id="friend-view">
+                    <a href="@ViewBag.FriendLink" class="article-media-container">
+                        @if (ViewBag.PictureStream_Preview != null)
+                        {
+                            <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'; this.classList.add('default')" class="article-media user-view-picture" alt="friend picture" />
+                        }
+                        else
+                        {
+                            <img src="/images/icons/user_avatar_default.svg" class="article-media user-view-picture default" alt="friend picture" />
+                        }
+                    </a>
+                    <div class="article-body">
+                        <a href="@ViewBag.FriendLink" class="user-view-name"><h3 class="m-0">@Friend.Nickname</h3></a>
+                        @*<h4 id="place-view-total-container">Experiences: @Place.Experience_Count</h4>*@
+                        @*<div id="place-view-share-container">
+                                <a href="@ViewBag.ShareLink_Facebook" class='fb-share-button share-button' id="place-view-share-fb" target="_blank">
+                                    <img src="~/images/icons/facebook.svg" alt="facebook" title="Share on Facebook">
+                                </a>
+                                <a href="@ViewBag.ShareLink_Twitter" class="twitter-share-button share-button" id="place-view-share-twitter"
+                                   target="_blank">
+                                    <img src="~/images/icons/twitter.svg" alt="twitter" title="Share on Twitter">
+                                </a>
+                                <a href="@ViewBag.ShareLink_Whatsapp" class='wa-share-button share-button' id="place-view-share-wa">
+                                    <img src="~/images/icons/whatsapp.svg" alt="whatsapp" title="Share on WhatsApp">
+                                </a>
+                            </div>*@
+                        @if (Friend.Description != null && Friend.Description != "")
+                        {
+                            <div class="user-view-description">
+                                @Html.Raw(Friend.Description)
+                                <a href="@ViewBag.FriendLink" class="more-button">...More</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <a href="/Search/People?ViewTypeEnum=@((int)ViewTypeEnum.Friends)&UserId=@ViewBag.User.Id" class="button float">
+                See all <b><img src="/images/icons/friend.svg" alt="all friends" class="t-size" /> Friends &amp; Requests</b>
+            </a>
+        }
+        else
+        {
+            <div class="article">
+                There is no <b>confirmed Friends</b> here! <a href="/Search/People?ViewTypeEnum=@((int)ViewTypeEnum.Friends)&UserId=@ViewBag.User.Id">See all <b><img src="/images/icons/friend.svg" alt="all friends" class="t-size" /> Friends &amp; Requests</b></a>
+            </div>
+        }
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_Footer"); }
+
+
+    <!-- popups -->
+    <div class="popup-container" id="user-profile-password-form-popup" onclose="closeUserProfilePasswordFormPopup()">
+        <form class="popup" name="user-profile-password-form" id="user-profile-password-form"
+              onsubmit="return userProfilePasswordSubmit(event)">
+            <div class="popup-header d-flex align-items">
+                <h3 class="flex-auto popup-title">Change password</h3>
+                <img src="/images/icons/close.svg" title="Close" class="icon"
+                     onclick="closeUserProfilePasswordFormPopup()" />
+            </div>
+            <div class="popup-body">
+                <small id="user-credentials-password-error" class="d-block error-color"></small>
+
+                <input type="hidden" id="user-credentials-password-id" />
+
+                <div class="input-container" id="user-credentials-password-container">
+                    <label for="user-credentials-password" class="label">Old password*</label>
+                    <input type="password" placeholder="Old password" id="user-credentials-password" class="input"
+                           required />
+                </div>
+                <div class="input-container" id="user-credentials-passwordnew-container">
+                    <label for="user-credentials-passwordnew" class="label">New password*</label>
+                    <input type="password" placeholder="Choose a new password" id="user-credentials-passwordnew"
+                           class="input" minlength="8" required />
+                    <small class="hint">At least 8 chars</small>
+                </div>
+                <div class="input-container" id="user-credentials-passwordnewrepeat-container">
+                    <label for="user-credentials-passwordnewrepeat" class="label">Repeat new password*</label>
+                    <input type="password" placeholder="Use the same password above"
+                           id="user-credentials-passwordnewrepeat" class="input" required />
+                </div>
+            </div>
+            <div class="popup-footer">
+                <button type="submit" class="button success" id="user-profile-password-form-confirm-button">
+                    Confirm
+                </button>
+                <button type="reset" class="button" id="user-profile-password-form-cancel-button"
+                        onclick="closeUserProfilePasswordFormPopup()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="popup-container" id="user-profile-mail-form-popup" onclose="closeUserProfileMailFormPopup()">
+        <form class="popup" name="user-profile-mail-form" id="user-profile-mail-form"
+              onsubmit="return userProfileMailSubmit(event)">
+            <div class="popup-header d-flex align-items">
+                <h3 class="flex-auto popup-title">Change mail</h3>
+                <img src="/images/icons/close.svg" title="Close" class="icon"
+                     onclick="closeUserProfileMailFormPopup()" />
+            </div>
+            <div class="popup-body">
+                <small class="popup-description">
+                    Did you change your mail? Remeber that you will have to confirm your
+                    new mail, and we will send a notification to your old mail
+                </small>
+
+                <small id="user-credentials-mail-error" class="d-block error-color"></small>
+
+                <input type="hidden" id="user-credentials-mail-id" />
+
+                <div class="input-container" id="user-credentials-mailnew-container">
+                    <label for="user-credentials-mailnew" class="label">New mail*</label>
+                    <input type="email" placeholder="Choose a new mail" id="user-credentials-mailnew" class="input"
+                           required />
+                </div>
+                <div class="input-container" id="user-credentials-mail-password-container">
+                    <label for="user-credentials-mail-password" class="label">Password*</label>
+                    <input type="password" placeholder="Your password" id="user-credentials-mail-password" class="input"
+                           required />
+                </div>
+            </div>
+            <div class="popup-footer">
+                <button type="submit" class="button success" id="user-profile-mail-form-confirm-button">
+                    Confirm
+                </button>
+                <button type="reset" class="button" id="user-profile-mail-form-cancel-button"
+                        onclick="closeUserProfileMailFormPopup()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (ViewBag.IsUserLogged && !ViewBag.IsMine && ViewBag.User.StatusEnum == UserStatusEnum.Activated)
+    {
+        <div class="popup-container" id="contactme-confirm-popup"
+             onclose="closeContactmePopup()">
+            <div class="popup small">
+                <div class="popup-header">
+                    <h3 class="popup-title">Let's contact <b>@ViewBag.User.Nickname</b>!</h3>
+                </div>
+                <div class="popup-body">
+                    <small id="contactme-confirm-error" class="d-block error-color"></small>
+                    <p>It will send him a mail with your references, if he wants he can answer you and, maybe, you will become friends!</p>
+                    <div class="input-container" id="contactme-message-container">
+                        <label for="contactme-message" class="label">Write your message</label>
+                        <textarea placeholder="Hey, I m Jhonny! I would like to know how you do so beautiful picture!" id="contactme-message" class="input" rows="5" style="resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button type="button" class="button success" id="contactme-confirm-yes-button"
+                            onclick="contactmeSubmit()">
+                        Contact <b>@ViewBag.User.Nickname</b>!
+                    </button>
+                    <button type="button" class="button" id="contactme-confirm-no-button"
+                            onclick="closeContactmePopup()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="popup-container" id="contactme-success">
+            <div class="popup small success">
+                <div class="popup-header">
+                    <h3 class="popup-title">Mail sent!</h3>
+                </div>
+                <div class="popup-body">
+                    <p>The mail has been sent, now just wait the user answer!</p>
+                </div>
+                <div class="popup-footer">
+                    <button type="button" class="button success" id="contactme-success-ok-button"
+                            onclick="closePopup('contactme-success')">
+                        Ok
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewBag.FriendCurrentUser != null && (ViewBag.FriendCurrentUser.StatusEnum == UserFriendStatusEnum.Accepted || ViewBag.FriendCurrentUser.StatusEnum == UserFriendStatusEnum.Pending))
+    {
+        <div class="popup-container" id="remove-friend-confirm-popup"
+             onclose="closeRemoveFriendPopup()">
+            <div class="popup small">
+                <div class="popup-header d-flex align-items">
+                    <img src="/images/icons/friend_remove.svg" title="Remove Friend" alt="remove friend" class="popup-icon" />
+                    <h3 class="popup-title">Remove your friend?</h3>
+                </div>
+                <div class="popup-body">
+                    <p>Do you really want to remove your <b>Friend</b> from your Friend list? :(</p>
+                </div>
+                <div class="popup-footer">
+                    <button type="button" class="button warning" id="remove-friend-confirm-yes-button"
+                            onclick="removeFriendSubmit()">
+                        Yes, I want!
+                    </button>
+                    <button type="button" class="button" id="remove-friend-confirm-no-button"
+                            onclick="closeRemoveFriendPopup()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewBag.IsMine)
+    {
+        <div class="popup-container" id="logout-confirm-popup"
+             onclose="closePopup('logout-confirm-popup')">
+            <div class="popup small">
+                <div class="popup-header">
+                    <h3 class="popup-title">Confirm logout?</h3>
+                </div>
+                <div class="popup-body">
+                    Are you sure to logout from World is Awesome .fun?
+                </div>
+                <div class="popup-footer">
+                    <button type="button" onclick="logoutSubmit()" class="button warning" id="logout-confirm-yes-button">
+                        Confirm
+                    </button>
+                    <button type="button" class="button" id="logout-confirm-no-button"
+                            onclick="closePopup('logout-confirm-popup')">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="popup-container" id="error-popup">
+        <div class="popup small error">
+            <div class="popup-header">
+                <h3 class="popup-title">Error!</h3>
+            </div>
+            <div class="popup-body">
+
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="button error" id="error-ok-button"
+                        onclick="closePopup('error-popup')">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup-container" id="success-popup">
+        <div class="popup small success">
+            <div class="popup-header">
+                <h3 class="popup-title">Success!</h3>
+            </div>
+            <div class="popup-body">
+
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="button success" id="success-ok-button"
+                        onclick="closePopup('success-popup')">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_ShareFacebook"); }
+    @{await Html.RenderPartialAsync("_ShareTwitter"); }
+
+</body>
+
+</html>

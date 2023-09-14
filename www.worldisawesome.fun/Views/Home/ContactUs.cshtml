@@ -1,0 +1,98 @@
+﻿@{ 
+    @using www.worldisawesome.fun;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>Contact us | World is Awesome .fun</title>
+
+    <meta name="description" content="Contact us, World is Awesome .fun, WiA" />
+    <meta name="keywords"
+          content="World is Awesome, World is Awesome .fun, World, Awesome, fun, wia, wia.fun, wia fun, experience, Diary, Travel, Trip, traveller, photo, video, contact us, contacts">
+
+
+    <!-- external -->
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+
+    <!-- internal -->
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+</head>
+
+<body class="@(ViewBag.IsUserLogged ? "logged" : "")">
+    @{ await Html.RenderPartialAsync("_Base"); }
+
+    @{ await Html.RenderPartialAsync("_HeaderBase"); }
+
+
+    <div class="article-container" id="contactus-form-popup">
+        <form class="article" name="contactus-form-popup" id="contactus-form" onsubmit="event.preventDefault()">
+            <div class="article-header">
+                <div class="d-flex align-items">
+                    <h2 class="flex-auto article-title">Contact us!</h2>
+                </div>
+            </div>
+            <div class="article-body">
+                <small class="article-description">
+                    Do you have a new idea? Do you want to send us your new experience? Or you want just to report a bug? Contact us for everything you want!
+                </small>
+
+                <address>
+                    <ul class="list">
+                        <!--<li class="list-item"><b>Owner:</b> Davide Murro</li>-->
+                        <li class="list-item break-word-wrap"><b>Head office:</b> Treviso, Veneto, Italy</li>
+                        <li class="list-item break-word-wrap"><b>Mail:</b> <a href="mailto:info@worldisawesome.fun" title='Info mail'>info@worldisawesome.fun</a></li>
+                        <li class="list-item break-word-wrap"><b>Facebook:</b> <a href="https://www.facebook.com/worldisawesome.fun/" target="_blank" title='Facebook page'>https://www.facebook.com/worldisawesome.fun/</a></li>
+                        <li class="list-item break-word-wrap"><b>Instagram:</b> <a href="https://www.instagram.com/worldisawesome.fun/" target="_blank" title='Instagram profile'>https://www.instagram.com/worldisawesome.fun/</a></li>
+
+                        <li><br /></li>
+
+                        <li class="list-item break-word-wrap"><b>Tag:</b> @@worldisawesome.fun</li>
+                        <li class="list-item break-word-wrap"><b>Hashtag:</b> #worldisawesomedotfun</li>
+
+                        <li><br /></li>
+
+                        <li class="list-item break-word-wrap"><b>App android:</b> <a href="https://play.google.com/store/apps/details?id=fun.worldisawesome.wia" target="_blank" title='Android app'>https://play.google.com/store/apps/details?id=fun.worldisawesome.wia</a></li>
+                    </ul>
+                </address>
+
+                <!--
+                <small id="contactus-error" class="d-block error-color"></small>
+
+                <div class="input-container" id="contactus-subject-container">
+                    <label for="contactus-subject" class="label">Subject</label>
+                    <input type="text" placeholder="Mail subject" id="contactus-subject" class="input" required autofocus />
+                </div>
+
+                <div class="input-container" id="contactus-mail-container">
+                    <label for="contactus-mail" class="label">Your mail</label>
+                    <input type="email" placeholder="A valid mail, so we can answer you!" id="contactus-mail" class="input" required />
+                </div>
+
+                <div class="input-container" id="contactus-description-container">
+                    <label for="contactus-description" class="label">Description</label>
+                    <textarea
+                        placeholder="Give an exhaustive description! We want to understand exactly what you are writing for!"
+                        id="contactus-description" class="input" rows="5" style="resize: vertical;"
+                        required></textarea>
+                </div>
+                -->
+            </div>
+            <!--
+            <div class="article-footer">
+                <button type="button" class="button success" id="error-ok-button" onclick="null">Send mail!</button>
+            </div>
+            -->
+        </form>
+    </div>
+
+    @{await Html.RenderPartialAsync("_HeaderBase"); }
+
+    @{ await Html.RenderPartialAsync("_Footer"); }
+</body>
+
+</html>

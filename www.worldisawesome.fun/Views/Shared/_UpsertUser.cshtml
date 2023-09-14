@@ -1,0 +1,45 @@
+﻿<div class="input-container" id="user-name-container">
+    <label for="user-name" class="label">Real name*</label>
+    <input type="text" placeholder="Jhonny" value="@( ViewBag.IsUpdate ? ViewBag.User.Name : "" )" id="user-name" class="input" required />
+</div>
+<div class="input-container" id="user-surname-container">
+    <label for="user-surname" class="label">Real surname*</label>
+    <input type="text" placeholder="Red" value="@( ViewBag.IsUpdate ? ViewBag.User.Surname : "" )" id="user-surname" class="input" required />
+</div>
+<div class="input-container mdi-container" id="user-picture-container">
+    <div class="d-flex">
+        <label for="user-picture" class="label flex-auto">Picture</label>
+        <a title="Remove picture" onclick="removeUserPicture()" id="user-picture-remove-button" class="@( ViewBag.IsUpdate && ViewBag.IsSetProfilePhoto ? "" : "d-none")">
+            Remove picture
+        </a>
+    </div>
+
+    <div id="user-picture-file-container">
+        <img src="@( ViewBag.IsUpdate && ViewBag.IsSetProfilePhoto ? ViewBag.PictureStream : "/images/icons/user_avatar_default.svg")" onerror="this.src='/images/icons/user_avatar_default.svg'" id="user-picture-img" class="mdi-filecontainer" alt="user picture" onclick="document.getElementById('user-picture').click()" />
+    </div>
+    <small class="hint t-right">Max size: 20MB</small>
+
+    <small id="user-picture-error" class="error-color d-block"></small>
+    <input type="file" placeholder="Picture" id="user-picture" class="input d-none mdi-fileinput" accept="image/*"
+           enctype="multipart/form-data" onchange="userPictureChange(this)" />
+</div>
+<div class="input-container" id="user-description-container">
+    <label for="user-description" class="label">Description</label>
+    <textarea placeholder="I m describing my self here, bla, bla bla.." id="user-description" class="input" rows="5"
+              style="resize: vertical;">@( ViewBag.IsUpdate ? ViewBag.User.Description : "" )</textarea>
+</div>
+<div class="input-container" id="user-birthdate-container">
+    <label for="user-birthdate" class="label">Birth Date</label>
+    <input type="date" placeholder="12/12/1990" value="@( ViewBag.IsUpdate ? ViewBag.User.BirthDate : "" )" id="user-birthdate" class="input" />
+</div>
+<div class="input-container" id="user-residence-container">
+    <div class="d-flex">
+        <label for="user-residence" class="label flex-auto">Residence</label>
+        <a title="Remove residence" onclick="removeUserResidence()" id="user-residence-remove-button" class="remove-button @( ViewBag.IsUpdate && ViewBag.IsSetResidence ? "" : "d-none")">
+            Remove residence
+        </a>
+    </div>
+    <input type="search" placeholder="Jinan, Shandong, China (cinana)" value="@( ViewBag.IsUpdate && ViewBag.IsSetResidence ? ViewBag.User.ResidencePlaceName : "" )" id="user-residence" class="input"
+           autocomplete="off" />
+    <div class="search-results-container" id="user-residence-search-results-container"></div>
+</div>

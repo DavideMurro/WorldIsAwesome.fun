@@ -1,0 +1,197 @@
+﻿@{
+    ViewBag.IsUserSet = ViewBag.IsUserSet != null ? ViewBag.IsUserSet : false;
+    ViewBag.IsMine = ViewBag.IsMine != null ? ViewBag.IsMine : false;
+    ViewBag.IsHome = ViewBag.IsHome != null ? ViewBag.IsHome : false;
+    ViewBag.IsSearchable = ViewBag.IsSearchable != null ? ViewBag.IsSearchable : false;
+    ViewBag.IsParallax = ViewBag.IsParallax != null ? ViewBag.IsParallax : false;
+    ViewBag.IsLogin = ViewBag.IsLogin != null ? ViewBag.IsLogin : false;
+
+    if (ViewBag.IsUserLogged)
+    {
+        ViewBag.UserLogged_PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.UserLogged.ProfilePhotoFileId, isPreview = true });
+    }
+}
+
+
+<header id="global-header-container">
+    <div id="home-button" class="header-button" onclick="openPopup('home-popup')">
+        <img src="/images/logo_icon.svg" class="icon" alt="world is awesome .fun" title="World is Awesome .fun" />
+        <!--<span class="text">Menu</span>-->
+    </div>
+
+    <h4 id="header-title">@ViewBag.HeaderTitle</h4>
+
+    @if (ViewBag.IsSearchable)
+    {
+        <div id="search-button" class="header-button" onclick="toggleExperiencePlacesClick()">
+            <!--<img src="/images/icons/search.svg" class="icon" alt="search" title="Search" align="center" />-->
+            <div class="icon" title="Search"></div>
+            <span class="text">Search</span>
+        </div>
+    }
+
+    <div class="flex-auto"></div>
+
+    @if (!ViewBag.IsUserLogged && !ViewBag.IsLogin)
+    {
+        <a href="/Login" title="Login" id="login-button" class="header-button">
+            <span class="text ml-0 mr-05">Login</span>
+            <img src="/images/icons/login_avatar.svg" class="icon" alt="login" title="Login" />
+        </a>
+    }
+    else if (ViewBag.IsUserLogged)
+    {
+        <a href="/View/User?UserId=@ViewBag.UserLogged.Id" title="My Profile" id="user-logged-button" class="header-button ismine">
+            <div class="text ml-0 mr-05">@ViewBag.UserLogged.Nickname</div>
+            <img src="@ViewBag.UserLogged_PictureStream_Preview"
+                 onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile"
+                 title="Profile" />
+        </a>
+    }
+</header>
+
+<div class="popup-container" id="home-popup" onclose="closePopup('home-popup')">
+    <div class="popup small">
+        <div class="popup-header d-flex align-items">
+            @if (ViewBag.IsHome)
+            {
+                <div class="popup-title flex-auto logo-title">
+                    <h1>World is Awesome</h1>
+                    <h2>Pin your world</h2>
+                </div>
+            }
+            else
+            {
+                <h2 class="popup-title flex-auto">Menu</h2>
+            }
+
+            <img src="/images/icons/close.svg" title="Close" alt="close" class="icon"
+                 onclick="closePopup('home-popup')" />
+        </div>
+        <div class="popup-body">
+            @if (ViewBag.IsParallax)
+            {
+                <button onclick="startHomeView()" title="Go top" class="button user-option-item home-view-hide">
+                    <img src="/images/icons/arrowup.svg" title="Go top" alt="go top" class="icon first" />
+                    Go top
+                </button>
+                <!--<div class="divider-horizontal home-view-hide"></div>-->
+            }
+
+            @if (!ViewBag.IsHome)
+            {
+                <a href="/" title="Home" class="button user-option-item">
+                    <img src="/images/logo_icon.svg" title="Home" alt="home" class="icon first" />
+                    Home page
+                </a>
+                <div class="divider-horizontal"></div>
+            }
+
+
+            @if (!ViewBag.IsUserLogged && !ViewBag.IsUserSet)
+            {
+                <a href="/Login?Redirect=/InsertExperience" title="New experience"
+                   class="button user-option-item large" id="newexperience-button-notlogged">
+                    <img src="/images/icons/experiencenew.svg" title="New experience" alt="new experience"
+                         class="icon first" />
+                    Insert a new Experience now!
+                </a>
+                <div class="divider-horizontal"></div>
+            }
+
+            @if (ViewBag.IsUserSet && !ViewBag.IsMine)
+            {
+                <a href="/View/User?UserId=@ViewBag.User.Id" title="Profile" class="button user-option-item" id="profile-button">
+                    <img src="/images/icons/user_avatar_default.svg" title="Profile" alt="profile" class="icon first" />
+                    <span class='text'><b>@ViewBag.User.Nickname</b>'s Profile </span>
+                </a>
+                <a href="/Search/Places?UserId=@ViewBag.User.Id" title="Profile Places" class="button user-option-item"
+                   id="searchprofileplaces-button">
+                    <img src="/images/icons/place.svg" title="Profile Places" alt="profile places" class="icon first" />
+                    <span class='text'><b>@ViewBag.User.Nickname</b>'s Places </span>
+                </a>
+                <a href="/Search/Experiences?UserId=@ViewBag.User.Id" title="Profile Experiences" class="button user-option-item"
+                   id="searchprofileexperiences-button">
+                    <img src="/images/icons/experiencemorning.svg" title="profile Experiences" alt="profile experiences"
+                         class="icon first" />
+                    <span class='text'><b>@ViewBag.User.Nickname</b>'s Experiences </span>
+                </a>
+                <a href="/Search/People?ViewTypeEnum=4&UserId=@ViewBag.User.Id" title="Profile Friends" class="button user-option-item"
+                   id="searchprofilefriends-button">
+                    <img src="/images/icons/friend.svg" title="profile Friends" alt="profile friends"
+                         class="icon first" />
+                    <span class='text'><b>@ViewBag.User.Nickname</b>'s Friends </span>
+                </a>
+                <div class="divider-horizontal" id="profile-separator"></div>
+            }
+            @if (ViewBag.IsUserLogged)
+            {
+                <a href="/InsertExperience" title="New experience" class="button user-option-item"
+                   id="newexperience-button">
+                    <img src="/images/icons/experiencenew.svg" title="New experience" alt="new experience"
+                         class="icon first" />
+                    New Experience
+                </a>
+                <a href="/View/User?UserId=@ViewBag.UserLogged.Id" title="My Profile" class="button user-option-item" id="myprofile-button">
+                    <img src="/images/icons/user_avatar_default.svg" title="My Profile" alt="my profile"
+                         class="icon first" />
+                    <span class="text"><b>My</b> Profile</span>
+                </a>
+                <a href="/?UserId=@ViewBag.UserLogged.Id" title="My World Profile" class="button user-option-item"
+                   id="myworldprofile-button">
+                    <img src="/images/logo_icon.svg" title="My World Profile" alt="my world profile"
+                         class="icon first" />
+                    <span class="text"><b>My</b> World Profile</span>
+                </a>
+                <a href="/Search/Places?UserId=@ViewBag.UserLogged.Id" title="My Places" class="button user-option-item" id="searchmyplaces-button">
+                    <img src="/images/icons/my_place.svg" title="My Places" alt="my places" class="icon first" />
+                    <span class="text"><b>My</b> Places</span>
+                </a>
+                <a href="/Search/Experiences?UserId=@ViewBag.UserLogged.Id" title="My Experiences" class="button user-option-item"
+                   id="searchmyexperiences-button">
+                    <img src="/images/icons/experiencemorning.svg" title="My Experiences" alt="my experiences"
+                         class="icon first" />
+                    <span class="text"><b>My</b> Experiences &amp; Drafts</span>
+                </a>
+                <a href="/Search/People?ViewTypeEnum=4&UserId=@ViewBag.UserLogged.Id" title="My Friends &amp; Request" class="button user-option-item"
+                   id="searchmyfriends-button">
+                    <img src="/images/icons/friend.svg" title="My Friends &amp; Request" alt="my friends and request"
+                         class="icon first" />
+                    <span class="text"><b>My</b> Friends &amp; Request</span>
+                </a>
+                <div class="divider-horizontal"></div>
+            }
+            <a href="/Search/People" title="Search People" class="button user-option-item">
+                <img src="/images/icons/people_search.svg" title="Search People" alt="search people"
+                     class="icon first" />
+                <span class='text'>Search <b>Global</b> People</span>
+            </a>
+            <a href="/Search/Places" title="Search Places" class="button user-option-item">
+                <img src="/images/icons/place_search.svg" title="Search Places" alt="search places"
+                     class="icon first" />
+                <span class='text'>Search <b>Global</b> Places</span>
+            </a>
+            <a href="/Search/Experiences" title="Search Experiences" class="button user-option-item">
+                <img src="/images/icons/experience_search.svg" title="Search Experiences" alt="search experiences"
+                     class="icon first" />
+                <span class='text'>Search <b>Global</b> Experiences</span>
+            </a>
+            <div class="divider-horizontal"></div>
+            @if (!ViewBag.IsUserLogged)
+            {
+                <a href="/SignUp" title="Signup" class="button user-option-item">
+                    <img src="/images/icons/login_avatar.svg" title="Signup" alt="signup" class="icon first" />
+                    Signup
+                </a>
+                <a href="/Login" title="Login" class="button user-option-item">
+                    <img src="/images/icons/login_avatar.svg" title="Login" alt="login" class="icon first" />
+                    Login
+                </a>
+            }
+            <a href="/ContactUs" title="Contact us" class="button user-option-item">
+                <img src="/images/icons/mail.svg" title="Contact us" alt="contact us" class="icon first" />
+                Contact us
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,285 @@
+﻿@{
+    @using www.worldisawesome.fun.Models;
+    @using www.worldisawesome.fun.Controllers;
+
+
+    ViewBag.Title = ViewBag.Experience.Name + " Experience";
+    ViewBag.DescriptionStripped = ViewController.StripHtml(ViewBag.Experience.Description);
+    ViewBag.MorningNightClass = ViewBag.Experience.MorningNightEnum != null && ViewBag.Experience.MorningNightEnum != MorningNightEnum.Default ? ViewBag.Experience.MorningNightEnum.ToString().ToLower() : "";
+
+    if (ViewBag.Experience.FileId != null)
+    {
+        ViewBag.FileStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetExperienceMediaStream", "View", new { mediaId = ViewBag.Experience.FileId, isPreview = true });
+        ViewBag.FileStream = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetExperienceMediaStream", "View", new { mediaId = ViewBag.Experience.FileId, isPreview = false });
+    }
+
+    ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.Experience.UserProfilePhotoFileId, isPreview = true });
+
+    ViewBag.ShareLink_Facebook = "https://www.facebook.com/sharer/sharer.php?u=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + ViewBag.Experience.Id;
+    ViewBag.ShareLink_Twitter = "https://twitter.com/intent/tweet?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + ViewBag.Experience.Id;
+    ViewBag.ShareLink_Whatsapp = "whatsapp://send?text=" + Context.Request.Scheme + "://" + Context.Request.Host + "/View/Experience?ExperienceId=" + ViewBag.Experience.Id;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>@ViewBag.Title | World is Awesome .fun</title>
+
+    <meta name="description" content="@ViewBag.Experience.Name Experience | @ViewBag.DescriptionStripped" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="World is Awesome .fun" />
+    <meta property="og:title" content="@ViewBag.Experience.Name | World is Awesome .fun" />
+    <meta property="og:description" content="@ViewBag.DescriptionStripped" />
+
+    <meta property="article:author" content="@ViewBag.Experience.UserName @ViewBag.Experience.UserSurname">
+    <meta property="article:publisher" content="@ViewBag.Experience.UserName @ViewBag.Experience.UserSurname">
+
+    @if (@ViewBag.FileStream != null)
+    {
+        @if (ViewBag.Experience.FileType.StartsWith("image/"))
+        {
+            <!--<meta property="og:type" content="image" />-->
+            <meta property="og:image" content="@ViewBag.FileStream_Preview" />
+            <meta property="og:image:type" content="@ViewBag.Experience.FileType" />
+            <meta property="og:image:width" content="1024" />
+            <meta property="og:image:height" content="1024" />
+            <!-- MS Tile - for Microsoft apps-->
+            <meta name="msapplication-TileImage" content="@ViewBag.Experience.FileType">
+
+            <meta name="twitter:image" content="@ViewBag.FileStream_Preview" />
+        }
+        else if (ViewBag.Experience.FileType.StartsWith("video/"))
+        {
+            <!--<meta property="og:type" content="video" />-->
+            <meta property="og:video" content="@ViewBag.FileStream_Preview" />
+            <meta property="og:video:url" content="@ViewBag.FileStream_Preview" />
+            <meta property="og:video:secure_url" content="@ViewBag.FileStream_Preview" />
+            <meta property="og:video:type" content="@ViewBag.Experience.FileType" />
+            <meta property="og:video:width" content="1280" />
+            <meta property="og:video:height" content="720" />
+
+            <meta name="twitter:video" content="@ViewBag.FileStream_Preview" />
+            <meta name="twitter:player:stream" content="@ViewBag.FileStream_Preview" />
+        }
+        else if (ViewBag.Experience.FileType.StartsWith("audio/"))
+        {
+            <!--<meta property="og:type" content="audio" />-->
+            <meta property="og:audio" content="@ViewBag.FileStream_Preview" />
+            <meta property="og:audio:type" content="@ViewBag.Experience.FileType" />
+
+            <meta name="twitter:audio" content="@ViewBag.FileStream_Preview" />
+        }
+    }
+
+    <meta property="og:url" content="/?ExperienceId=@ViewBag.Experience.Id">
+    <!--<meta http-equiv="refresh" content="0; URL='/?ExperienceId=@ViewBag.Experience.Id'" />-->
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ViewBag.Experience.Name | World is Awesome .fun" />
+    <meta name="twitter:description" content="@ViewBag.DescriptionStripped" />
+
+
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+    <script src="~/lib/hammerjs/hammer.min.js" type="text/javascript"></script>
+    <script src="~/lib/zoom.js/directive.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+    <script src="~/js/script_view_experience.js" type="text/javascript"></script>
+</head>
+
+<body class="@(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "") @ViewBag.MorningNightClass">
+    @{await Html.RenderPartialAsync("_Base"); }
+
+
+    @{await Html.RenderPartialAsync("_Header"); }
+
+
+    <div class="article-container" id="experience-view-popup">
+
+        <div class="article large o-visible @(ViewBag.IsMine ? "ismine" : "") @(ViewBag.IsToDo ? "istodo" : "")" id="experience-view">
+
+            <div class="article-header d-flex align-items">
+                <h1 id="experience-view-name" class="flex-auto article-title">@ViewBag.Experience.Name</h1>
+
+                @if (ViewBag.IsUserLogged && !ViewBag.IsMine && ViewBag.IsToDo)
+                {
+                    <img src="/images/icons/todo_active.svg" alt="remove todo experience" title="Remove Experience ToDo" class="icon" id="experience-view-experiencetodo-button" onclick="removeExperienceToDoClick('@ViewBag.Experience.Id')" />
+                }
+            </div>
+
+            <div class="article-body">
+                <small id="experience-view-error" class="d-block error-color mb-1"></small>
+
+                <a href="/View/User?UserId=@ViewBag.Experience.UserId" id="experience-view-user">
+                    <img src="@ViewBag.PictureStream_Preview" onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile picture" />
+                    <span class="text">@ViewBag.Experience.UserNickname</span>
+                </a>
+
+
+                @if (@ViewBag.FileStream != null)
+                {
+                    <div id="experience-view-media-container">
+                        @if (ViewBag.Experience.FileType.StartsWith("image/"))
+                        {
+                            <div class="zoom">
+                                <img src="@ViewBag.FileStream" onerror="this.src='/images/icons/media_default.svg'" class="experience-view-media active media" id="experience-view-media-img" alt="experience media"
+                                     draggable="false" />
+                            </div>
+                        }
+                        else if (ViewBag.Experience.FileType.StartsWith("video/"))
+                        {
+                            <video src="@ViewBag.FileStream" class="experience-view-media active" controls id="experience-view-media-video" draggable="false">
+                                Your browser does not support the video tag.
+                            </video>
+                        }
+                        else if (ViewBag.Experience.FileType.StartsWith("audio/"))
+                        {
+                            <audio src="@ViewBag.FileStream" class="experience-view-media active" controls id="experience-view-media-audio" draggable="false">
+                                Your browser does not support the audio element.
+                            </audio>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <img src="/images/icons/media_default.svg" class="experience-view-media active" id="experience-view-media-img" alt="experience media" draggable="false" />
+                }
+
+                <div class="m-05"></div>
+
+                <div class="f-right" id="experience-view-share-container">
+                    @if (ViewBag.Experience.PrivacyLevel == PrivacyLevelEnum.Private)
+                    {
+                        <small class="privacylevel-tag">Private</small>
+                    }
+                    else if (ViewBag.Experience.PrivacyLevel == PrivacyLevelEnum.Confidential)
+                    {
+                        <small class="privacylevel-tag">Only friends</small>
+                    }
+                    else if (ViewBag.Experience.StatusEnum == ExperienceStatusEnum.Draft)
+                    {
+                        <small class="status-tag warning-color">Draft</small>
+                    }
+                    else if (ViewBag.Experience.StatusEnum == ExperienceStatusEnum.Deleted)
+                    {
+                        <small class="status-tag error-color">Deleted</small>
+                    }
+                    else
+                    {
+                        <div>
+                            <a href="@ViewBag.ShareLink_Facebook" class='fb-share-button share-button' id="experience-view-share-fb" target="_blank">
+                                <img src="~/images/icons/facebook.svg" alt="facebook" title="Share on Facebook">
+                            </a>
+                            <a href="@ViewBag.ShareLink_Twitter" class="tw-share-button share-button" id="experience-view-share-twitter" target="_blank">
+                                <img src="~/images/icons/twitter.svg" alt="twitter" title="Share on Twitter">
+                            </a>
+                            <a href="@ViewBag.ShareLink_Whatsapp" class='wa-share-button share-button' id="experience-view-share-wa">
+                                <img src="~/images/icons/whatsapp.svg" alt="whatsapp" title="Share on WhatsApp">
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                @if (ViewBag.Experience.PlaceId != null)
+                {
+                    <small class="d-block" id="experience-view-place"><a href="/View/Place?PlaceId=@ViewBag.Experience.PlaceId"><img src="/images/icons/place.svg" alt="all places" class="t-size" /> @ViewBag.Experience.PlaceName</a></small>
+                }
+                @if (ViewBag.Experience.Date != null)
+                {
+                    <small class="d-block" id="experience-view-datetime">@(ViewBag.Experience.Time != null ? ViewBag.Experience.Date + ", " + ViewBag.Experience.Time : ViewBag.Experience.Date )</small>
+                }
+
+
+                <div class="fc-both" id="experience-view-description">@Html.Raw(ViewBag.Experience.Description)</div>
+
+            </div>
+
+
+            @if (@ViewBag.Experience.UsersToDoList != null && @ViewBag.Experience.UsersToDoList.Count > 0)
+            {
+                <div class="article-footer">
+                    <a href="/Search/People?ViewTypeEnum=@((int)ViewTypeEnum.ExperiencesToDo)&ExperienceId=@ViewBag.Experience.Id"><img src="/images/icons/people.svg" class="t-size" /> @ViewBag.Experience.UsersToDoList.Count People</a> that have this <b><img src="/images/icons/todo_active.svg" class="t-size" /> Experience ToDo</b>!
+
+                    @if (ViewBag.IsToDo)
+                    {
+                        <p>You have this Experience ToDo. Already done? You can <a onclick="removeExperienceToDoClick('@ViewBag.Experience.Id')">Remove it</a></p>
+                    }
+                </div>
+            }
+            @if (ViewBag.IsUserLogged && !ViewBag.isToDo && !ViewBag.isMine)
+            {
+                <div>
+                    <button onclick="addExperienceToDoClick('@ViewBag.Experience.Id')" class="button user-option-item large">
+                        <img src="/images/icons/todo_add.svg" alt="add todo experience" title="Add Experience ToDo" class="icon first" id="experience-view-experiencetodo-button" />
+                        <span class="text">Add to: <b>Experiences ToDo</b></span>
+                    </button>
+                </div>
+            }
+            else if (!ViewBag.IsUserLogged)
+            {
+                <div>
+                    <a href="/Login?Redirect=@Context.Request.Path@Context.Request.QueryString" class="button user-option-item justify-content">
+                        <img src="/images/icons/todo_add.svg" alt="add todo experience" title="Add Experience ToDo" class="icon first" id="experience-view-experiencetodo-button" />
+                        <span class="text">Do you like this experience? <b>Login</b> and add to: <b>Experiences ToDo</b></span>
+                    </a>
+                </div>
+            }
+
+
+            @if (ViewBag.IsMine)
+            {
+                <div class="article-footer">
+                    <a href="/EditExperience?ExperienceId=@ViewBag.Experience.Id&Redirect=/View/Experience?ExperienceId=@ViewBag.Experience.Id" class="button user-option-item">
+                        <img src='/images/icons/edit.svg' title="Edit" class='icon first' id="experience-view-edit-button" />
+                        Edit Experience
+                    </a>
+                    <button class="button user-option-item warning" onclick="deleteExperienceClick('@ViewBag.Experience.Id')">
+                        <img src='/images/icons/delete.svg' title="Delete" class='icon first' id="experience-view-delete-button" />
+                        Delete Experience
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_Footer"); }
+
+
+    <!-- popups -->
+    <div class="popup-container" id="experience-delete-confirm-popup"
+         onclose="deleteExperienceClose()">
+        <div class="popup small">
+            <div class="popup-header">
+                <h3 class="popup-title">Are you sure to delete the experience?</h3>
+            </div>
+            <div class="popup-body">
+                It will no longer be possible to recover the experience.
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="button warning" id="experience-delete-confirm-yes-button"
+                        onclick="deleteExperienceSubmit()">
+                    Yes
+                </button>
+                <button type="button" class="button" id="experience-delete-confirm-no-button"
+                        onclick="deleteExperienceClose()">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    @{await Html.RenderPartialAsync("_ShareFacebook"); }
+    @{await Html.RenderPartialAsync("_ShareTwitter"); }
+</body>
+
+</html>
+

@@ -1,0 +1,359 @@
+﻿@{
+    @using www.worldisawesome.fun;
+
+    if (ViewBag.IsUserSet)
+    {
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.User.ProfilePhotoFileId, isPreview = true });
+    }
+    else if (ViewBag.IsUserLogged)
+    {
+        ViewBag.PictureStream_Preview = Context.Request.Scheme + "://" + Context.Request.Host + Url.Action("GetUserPictureStream", "View", new { pictureId = ViewBag.UserLogged.ProfilePhotoFileId, isPreview = true });
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>@( ViewBag.IsUserSet ? (ViewBag.User.Nickname + " | World profile | " ): "")World is Awesome .fun</title>
+
+    <!--<meta name="description" content="World is Awesome is what every traveler needs: an easy way to collect adventures and bring them always with you. Can you imagine a travel diary full of your best photos and video, just a click away? Create a profile, pin your world and just have fun with wia!!" />
+        -->
+    <meta name="description" content="World is Awesome .fun! Search Places to visit. Find Experiences to do. Make new Friends. Share your profile with other people. Create your world with WiA!!" />
+    <meta name="keywords" content="World is Awesome, World is Awesome .fun, World, Awesome, fun, wia, wia.fun, wia fun, experience, Diary, Travel, Trip, traveller, photo, video, where to go, looking for experiences, find places">
+    <meta name="author" content="World is Awesome .fun">
+
+    <meta property="og:title" content="World is Awesome .fun" />
+    <meta property="og:description" content="World is Awesome is what every traveler needs: an easy way to collect adventures and bring them always with you. Can you imagine a travel diary full of your best photos and video, just a click away? Create a profile, pin your world and just have fun with wia!!" />
+    <meta property="og:url" content="https://www.worldisawesome.fun/" />
+    <meta property="og:site_name" content="World is Awesome .fun">
+    <meta property="og:image" content="https://www.worldisawesome.fun/images/logo_icon_green.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:author" content="World is Awesome .fun" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="it_IT" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content="https://www.worldisawesome.fun/images/logo_icon_green.png" />
+    <meta name="twitter:title" content="World is Awesome .fun" />
+    <meta name="twitter:description" content="World is Awesome is what every traveler needs: an easy way to collect adventures and bring them always with you. Can you imagine a travel diary full of your best photos and video, just a click away? Create a profile, pin your world and just have fun with wia!!" />
+    <!--<meta name="twitter:site" content="summary" />
+    <meta name="twitter:creator" content="summary" />
+    -->
+    <!-- external -->
+    <link rel="manifest" href="~/site.webmanifest" crossorigin="use-credentials">
+    <link href="~/lib/font_nunito/Nunito.css" rel="stylesheet">
+    <script async src="~/lib/miniature.earth/miniature.earth.js" type="text/javascript"></script>
+    <script async src="~/lib/hammerjs/hammer.min.js" type="text/javascript"></script>
+
+    <!-- internal -->
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+    <link rel="stylesheet" href="~/css/style.min.css">
+
+    <script src="~/js/script_vars.min.js" type="text/javascript"></script>
+    <script src="~/js/script_apicall.min.js" type="text/javascript"></script>
+    <script src="~/js/script.min.js" type="text/javascript"></script>
+</head>
+
+<body class="loading @(ViewBag.IsUserSet ? "home-view" : "world-view") @(ViewBag.IsUserLogged ? "logged" : "") @(ViewBag.IsMine ? "ismine" : "")">
+    @{await Html.RenderPartialAsync("_Base"); }
+
+    @{await Html.RenderPartialAsync("_Header"); }
+
+    <div id="global-list-container">
+        <nav id="experience-search-list-container">
+            <div class="p-1 search-list-container">
+                <div id="experience-search-list-title" class="d-flex align-items">
+                    <div class="input-container search-container flex-auto" id="experience-search-container">
+                        <label for="experience-search" class="label">Search</label>
+                        <input type="search" placeholder="Place, Experience, Friend or whatever you want"
+                               id="experience-search" class="input" />
+                    </div>
+                </div>
+
+                <div class="list-container" id="place-list-container">
+                    <small class="subtitle">
+                        <img src="/images/icons/place.svg" alt="places" class="t-size mr-05">
+                        <span class="flex-auto">
+                            @(ViewBag.IsMine ? "My Places" : ViewBag.IsUserSet ? ViewBag.User.Nickname + "'s Places" : "Global Places" )
+                            <span class="flag-container"></span>
+                        </span>
+                    </small>
+                    <div class="list-container" id="place-list">
+                        <small class="noresult">Search for Places</small>
+                    </div>
+                </div>
+                <div class="list-container" id="experience-list-container">
+                    <small class="subtitle">
+                        <img src="/images/icons/experiencemorning.svg" alt="experiences" class="t-size mr-05">
+                        <span class="flex-auto">
+                            @(ViewBag.IsMine ? "My Experiences" : ViewBag.IsUserSet ? ViewBag.User.Nickname + "'s Experiences" : "Global Experiences" )
+                            <span class="flag-container"></span>
+                        </span>
+                    </small>
+                    <div class="list-container" id="experience-list">
+                        <small class="noresult">Search for Experiences</small>
+                    </div>
+                </div>
+                <div class="list-container" id="user-list-container">
+                    <small class="subtitle">
+                        <img src="/images/icons/people.svg" alt="people" class="t-size mr-05">
+                        @(ViewBag.IsMine ? "My Friends" : ViewBag.IsUserSet ? ViewBag.User.Nickname + "'s Friends" : "Global People" )
+                    </small>
+                    <div class="list-container" id="user-list">
+                        <small class="noresult">Search for People</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    @*@if (ViewBag.IsHome)
+    {
+    <div id="home-body-container" class="article-container">
+        <div id="welcome-container">
+            <h4>Welcome to</h4>
+            <div id="home-body-logo">
+                <img src="~/images/logo_icon.svg" alt="logo icon" title="Logo icon" class="icon" />
+                <div class="text-container">
+                    <h1>World is Awesome</h1>
+                    <h2>Pin your world</h2>
+                </div>
+            </div>
+
+            <h3 class="m-1">This is WiA, a free Place to put your Experiences and share them with your Friends!</h3>
+        </div>
+        
+        <div class="input-container search-container article" id="global-search-container">
+            <label for="global-search" class="label">Where would you like to go?</label>
+            <input type="search" placeholder="Canada, Treviso, Shanghai"
+                   id="global-search" class="input" onfocus="this.select()" />
+            <!--<div class="search-results-container" id="global-search-results-container"></div>-->
+        </div>
+
+        <img src="~/images/icons/arrowdown.svg" alt="next page" title="Next page" id="next-page" onclick="startWorldView()"/>
+    </div>
+    }
+    else *@@if (ViewBag.IsUserSet)
+    {
+    <div id="user-selected-body-container">
+        <a href="/View/User?UserId=@ViewBag.User.Id" id="user-button" title="Profile" class="header-button">
+            <img src="@ViewBag.PictureStream_Preview"
+                 onerror="this.src='/images/icons/user_avatar_default.svg'" class="icon" alt="profile"
+                 title="Profile" />
+            <div class="text">@ViewBag.User.Nickname</div>
+        </a>
+        <div class="m-1">@Html.Raw(ViewBag.User.Description)</div>
+
+        <div id="header-logo" onclick="startWorldView()">
+            <div id="home-logo"><img src="~/images/logo_icon.svg" alt="logo" title="Home" class="icon" /></div>
+        </div>
+    </div>
+    }
+
+    <div id="world-body-container">
+
+        <div id="wrapper">
+            <div id="wrapper-in">
+                @if (!ViewBag.IsUserSet)
+                {
+                <div id="refresh-markers" onclick="updateMarkers()">
+                    <img src="/images/icons/refresh_world.svg" class="icon" alt="refresh world" title="Refresh World" />
+                    <div class="text"><b>Refresh World</b></div>
+                </div>
+                }
+
+                <div id="myearth">
+                    <div id="glow">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-action-container">
+            <nav id="action-container">
+                <div id="morningnight-button" class="footer-button small" onclick="changeMorningNight()">
+                    <span class="text"></span>
+                    <div class="icon" title="Change daytime"></div>
+                </div>
+                @if (ViewBag.IsUserSet)
+                {
+                <div id="changetype-button" class="footer-button small" onclick="changeView()">
+                    <span class="text"></span>
+                    <div class="icon" title="Change view"></div>
+                </div>
+                }
+                @if (ViewBag.IsUserLogged)
+                {
+                <div id="newexperience-ft-button" class="footer-button" onclick="newExperienceClick()">
+                    <span class="text">New experience</span>
+                    <img src="/images/icons/experiencenew.svg" class="icon" alt="new experience" title="New Experience">
+                </div>
+                }
+            </nav>
+
+            @{await Html.RenderPartialAsync("_Footer"); }
+        </div>
+
+    </div>
+
+
+    <div class="popup-container" id="share-link-popup" onclose="closePopup('share-link-popup')">
+        <div class="popup">
+            <div class="popup-header d-flex">
+                <h3 class="popup-title flex-auto">Share Link!</h3>
+
+                <img src="/images/icons/close.svg" title="Close" class="icon" alt="close"
+                     onclick="closePopup('share-link-popup')" />
+            </div>
+            <div class="popup-body">
+                Copy the link below and send it to your friends!
+                <div class="input-container" id="share-link-container">
+                    <label for="share-link" class="label">Link</label>
+                    <div class="d-flex">
+                        <input type="text" placeholder="Link" id="share-link" class="input" />
+                        <button class="button" id="share-link-copy-button" onclick="copyShareLink()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @if (!ViewBag.IsUserLogged)
+    {
+    <div class="popup-container" id="guest-login-popup">
+        <div class="popup info small">
+            <div class="popup-header d-flex align-items">
+                <img src="/images/logo_icon.svg" title="World is Awesome" alt="logo" class="popup-icon" />
+                <h3 class="popup-title flex-auto">Welcome to World is Awesome!</h3>
+            </div>
+            <div class="popup-body">
+                <p>
+                    This is a <b>completely free</b> site! Here you can insert your <b>Experiences</b>, meeting new
+                    <b>People</b> and discover awesome <b>Places</b> with just few clicks!
+                </p>
+                <p>
+                    Are you a guest? Create your own account and let's explore your World!
+                </p>
+            </div>
+            <div class="popup-footer d-flex">
+                <button type="button" class="button success" id="guest-signup-button"
+                        onclick="window.location.href='/SignUp'">
+                    Sign up
+                </button>
+                <button type="button" class="button info" id="guest-login-buttons"
+                        onclick="window.location.href='/Login'">
+                    Login
+                </button>
+                <span class="flex-auto"></span>
+                <button type="button" class="button info" id="guest-cancel-button"
+                        onclick="closePopup('guest-login-popup')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+    else if (ViewBag.IsUserSet && ViewBag.IsMine && !ViewBag.IsAnyExperiences)
+    {
+    <div class="popup-container" id="noexperiences-popup">
+        <div class="popup info small">
+            <div class="popup-header d-flex align-items">
+                <img src="/images/icons/experiencenew.svg" title="New Experience" alt="new expereince" class="popup-icon" />
+                <h3 class="popup-title flex-auto">You have no Experiences! Start here!</h3>
+            </div>
+            <div class="popup-body">
+                <p>
+                    It looks like you have no Experiences in your world! :(... follow this icon <img src="/images/icons/experiencenew.svg" title="New Experience" alt="new expereince" class="t-size" /> to insert a new one wherever you want!
+                </p>
+                <p>
+                    Are you a new? You can start here! Click <b>new Experience</b>!
+                </p>
+            </div>
+            <div class="popup-footer d-flex">
+                <button type="button" class="button success" id="noexperiences-insert-button"
+                        onclick="window.location.href='/InsertExperience'">
+                    New Experience
+                </button>
+                <span class="flex-auto"></span>
+                <button type="button" class="button info" id="noexperiences-cancel-button"
+                        onclick="closePopup('noexperiences-popup')">
+                    Continue without expereinces
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+
+    <div class="popup-container" id="error-popup">
+        <div class="popup small error">
+            <div class="popup-header">
+                <h3 class="popup-title">Error!</h3>
+            </div>
+            <div class="popup-body">
+
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="button error" id="error-ok-button"
+                        onclick="closePopup('error-popup')">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup-container" id="success-popup">
+        <div class="popup small success">
+            <div class="popup-header">
+                <h3 class="popup-title">Success!</h3>
+            </div>
+            <div class="popup-body">
+
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="button success" id="success-ok-button"
+                        onclick="closePopup('success-popup')">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173658250-1">
+    </script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-173658250-1');
+    </script>
+
+    @if (!ViewBag.IsUserLogged)
+    {
+    <script>
+        window.addEventListener("myOnInitCompleted", async () => {
+            setTimeout(() => {
+                openPopup("guest-login-popup");
+            }, 10000);
+        });
+    </script>
+    }
+    else if (ViewBag.IsUserSet && ViewBag.IsMine && !ViewBag.IsAnyExperiences)
+    {
+    <script>
+        window.addEventListener("myOnInitCompleted", async () => {
+            setTimeout(() => {
+                openPopup("noexperiences-popup");
+            }, 1000);
+        });
+    </script>
+    }
+
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+﻿<div class="input-container" id="experience-name-container">
+    <label for="experience-name" class="label" style="font-size: 1em;">Name*</label>
+    <input type="text" placeholder="Name of your experience!" value="@( ViewBag.IsUpdate ? ViewBag.Experience.Name : "" )" id="experience-name" class="input" style="font-size: 1.2em;" autocomplete="off" required autofocus/>
+</div>
+<div class="input-container mdi-container" id="experience-media-container">
+    <div class="d-flex">
+        <label for="experience-media" class="label flex-auto">Media*</label>
+        <a title="Remove media" onclick="removeExperienceMedia()" id="experience-media-remove-button" class="@( ViewBag.IsUpdate && ViewBag.IsSetMediaFile ? "" : "d-none")">Remove media</a>
+    </div>
+
+    <div id="experience-media-file-container">
+        @if (ViewBag.IsUpdate && ViewBag.IsSetMediaFile)
+        {
+            if (ViewBag.Experience.FileType.StartsWith("image/"))
+            {
+                <img src="@ViewBag.FileStream" alt="experience media" onerror="onMediaError(this.parentElement)" id="experience-media-img" class="mdi-filecontainer" onclick="document.getElementById('experience-media').click()" />
+            }
+            else if (ViewBag.Experience.FileType.StartsWith("video/"))
+            {
+                <video src="@ViewBag.FileStream" controls onerror="onMediaError(this.parentElement)" id="experience-media-video"></video>
+            }
+            else if (ViewBag.Experience.FileType.StartsWith("audio/"))
+            {
+                <audio src="@ViewBag.FileStream" controls onerror="onMediaError(this.parentElement)" id="experience-media-audio"></audio>
+            }
+        }
+        else
+        {
+            <img src="/images/icons/media_default.svg" alt="experience media" onerror="onMediaError(this.parentElement)" id="experience-media-img" class="mdi-filecontainer" onclick="document.getElementById('experience-media').click()" />
+        }
+    </div>
+    <small id="experience-media-error" class="error-color d-block"></small>
+    <small class="hint t-right">Max size: 20MB</small>
+
+    <input type="file" placeholder="Media" id="experience-media" class="input d-none mdi-fileinput"
+           accept="audio/*,video/*,image/*" enctype="multipart/form-data"
+           onchange="experienceMediaChange(this)" />
+</div>
+<div class="input-container" id="experience-description-container">
+    <label for="experience-description" class="label">Description*</label>
+    <textarea placeholder="Give a very good description to your experience! Describe the moment, the location, the entire day and how it was... Remember that you will read it in the future, maybe, with a little melancholy!"
+              id="experience-description" class="input" rows="5" style="resize: vertical;" autocomplete="off"
+              required>@(ViewBag.IsUpdate ? ViewBag.Experience.Description : "" )</textarea>
+</div>
+<div class="input-container" id="experience-date-container">
+    <label for="experience-date" class="label">Date*</label>
+    <input type="date" placeholder="Date of experience" value="@( ViewBag.IsUpdate ? ViewBag.Experience.Date : @DateTime.Now.ToString("yyyy-MM-dd") )" id="experience-date" class="input" required />
+</div>
+<div class="input-container" id="experience-time-container">
+    <label for="experience-time" class="label">Time</label>
+    <input type="time" placeholder="Time of experience" value="@( ViewBag.IsUpdate ? ViewBag.Experience.Time : "" )" id="experience-time" class="input" />
+</div>
+<div class="input-container" id="morningnight-enum-radio-container">
+    <label for="experience-morningnight-enum" class="label">Daytime*</label>
+
+    <div class="morningnight-enum-radio @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Morning) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Morning) ? "active" : "" )">
+        <input type="radio" name="experience-morningnight-enum"
+               id="experience-morningnight-enum-morning" value="1"
+               onchange="selectMorningnightRadio(this)" required @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Morning) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Morning) ? "checked" : "" ) />
+        <label for="experience-morningnight-enum-morning">
+            <img src="/images/icons/sun.svg" alt="sun" title="Morning" />
+            Morning
+        </label>
+    </div>
+    <div class="morningnight-enum-radio @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Night) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Night) ? "active" : "" )">
+        <input type="radio" name="experience-morningnight-enum"
+               id="experience-morningnight-enum-night" value="2"
+               onchange="selectMorningnightRadio(this)" required @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Night) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Night) ? "checked" : "" ) />
+        <label for="experience-morningnight-enum-night">
+            <img src="/images/icons/star.svg" alt="star" title="Night" />
+            Night
+        </label>
+    </div>
+    <div class="morningnight-enum-radio @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Evening) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Evening) ? "active" : "" )">
+        <input type="radio" name="experience-morningnight-enum"
+               id="experience-morningnight-enum-evening" value="3"
+               onchange="selectMorningnightRadio(this)" required @( (ViewBag.IsUpdate && ViewBag.IsSetMorningNight && ViewBag.Experience.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Evening) || (!ViewBag.IsUpdate && ViewBag.MorningNightEnum != null && ViewBag.MorningNightEnum == www.worldisawesome.fun.Models.MorningNightEnum.Evening) ? "checked" : "" ) />
+        <label for="experience-morningnight-enum-evening">
+            <img src="/images/icons/sunset.svg" alt="sunset" title="Evening" />
+            Evening
+        </label>
+    </div>
+</div>
+<div class="input-container" id="experience-place-container">
+    <div class="d-flex">
+        <label for="experience-place" class="label flex-auto">Place*</label>
+        <a title="Remove place" onclick="removeExperiencePlace()" id="experience-place-remove-button"
+           class="remove-button @( ViewBag.IsSetPlace ? "" : "d-none" )">Remove place</a>
+    </div>
+    <input type="search" placeholder="Place where you were" value="@( ViewBag.IsSetPlace ? ViewBag.Experience.PlaceName : "" )" id="experience-place" class="input"
+           autocomplete="off" />
+    <div class="search-results-container" id="experience-place-search-results-container"></div>
+</div>
+<div class="input-container" id="privacylevel-radio-container">
+    <label for="experience-privacylevel" class="label">Privacy level (visibility)*</label>
+
+    <div class="privacylevel-radio d-inline-block @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Public ? "active" : "" )">
+        <input type="radio" name="experience-privacylevel"
+               id="experience-privacylevel-public" value="1"
+               onchange="selectPrivacylevelRadio(this)" required @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Public ? "checked" : "" )/>
+        <label for="experience-privacylevel-public" class="privacylevel-tag">
+            Public
+        </label>
+    </div>
+    <div class="privacylevel-radio d-inline-block @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Confidential ? "active" : "" )">
+        <input type="radio" name="experience-privacylevel"
+               id="experience-privacylevel-confidential" value="2"
+               onchange="selectPrivacylevelRadio(this)" required @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Confidential ? "checked" : "" ) />
+        <label for="experience-privacylevel-confidential" class="privacylevel-tag">
+            Only Friends
+        </label>
+    </div>
+    <div class="privacylevel-radio d-inline-block @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Private ? "active" : "" )">
+        <input type="radio" name="experience-privacylevel"
+               id="experience-privacylevel-private" value="3"
+               onchange="selectPrivacylevelRadio(this)" required @( ViewBag.IsUpdate && ViewBag.IsSetPrivacyLevel && ViewBag.Experience.PrivacyLevel == www.worldisawesome.fun.Models.PrivacyLevelEnum.Private ? "checked" : "" ) />
+        <label for="experience-privacylevel-private" class="privacylevel-tag">
+            Private
+        </label>
+    </div>
+</div>

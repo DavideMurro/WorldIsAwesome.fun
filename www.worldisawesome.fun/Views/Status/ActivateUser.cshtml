@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{await Html.RenderPartialAsync("_HeadBase"); }
+    <title>Activation user | World is Awesome .fun</title>
+
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/style_material.min.css">
+</head>
+
+<body class="t-center">
+    @{await Html.RenderPartialAsync("_HeaderBase"); }
+
+    @if (ViewBag.Result)
+    {
+        <div class="p-1">
+            <h1 class="success-color">Activation completed!</h1>
+            <p>
+                <h4>Welcome to World is Awesome <b>@ViewBag.User.Nickname</b>! Now enjoy our fun world and start to insert your Experiences!</h4>
+                <a href="/?UserId=@ViewBag.User.Id" class="button success d-inline-block m-05">My World Profile</a>
+                <a href="/InsertExperience" class="button info d-inline-block m-05">Insert new Experience</a>
+            </p>
+        </div>
+
+    }
+    else
+    {
+        <div class="p-1">
+            <h1 class="error-color">Something went wrong</h1>
+            <p>@ViewBag.ResultMessage</p>
+        </div>
+    }
+</body>
+
+</html>
