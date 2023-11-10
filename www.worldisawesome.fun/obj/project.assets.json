@@ -8542,11 +8542,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Betacom\\Documents\\GitHub\\WorldIsAwesome.fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
+      "projectUniqueName": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
       "projectName": "www.worldisawesome.fun",
-      "projectPath": "C:\\Users\\Betacom\\Documents\\GitHub\\WorldIsAwesome.fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
+      "projectPath": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
       "packagesPath": "C:\\Users\\Betacom\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Betacom\\Documents\\GitHub\\WorldIsAwesome.fun\\www.worldisawesome.fun\\obj\\",
+      "outputPath": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Betacom\\AppData\\Roaming\\NuGet\\NuGet.Config",

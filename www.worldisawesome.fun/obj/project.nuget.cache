@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "r6kaRaaA8uMJYoH9rQnkiwEcEcOIf+NrvBd2hdP5QMp8vfy1HejFylysRToCbiSDKSu3lRObBA8Y8F9WvggjVA==",
+  "dgSpecHash": "NapAgGlk/Mcft66hcgRw5GmJGDDgJePUYPUn9TuLv5eC+I3/4JYZWUU/gF5Wa+bgi9ynSkro+TSf0GZjkIv+Eg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Betacom\\Documents\\GitHub\\WorldIsAwesome.fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
+  "projectFilePath": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Betacom\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\Betacom\\.nuget\\packages\\microsoft.aspnetcore.razor\\2.2.0\\microsoft.aspnetcore.razor.2.2.0.nupkg.sha512",
