@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj": {}
+    "D:\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj": {
+    "D:\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
+        "projectUniqueName": "D:\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
         "projectName": "www.worldisawesome.fun",
-        "projectPath": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
+        "projectPath": "D:\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\www.worldisawesome.fun.csproj",
         "packagesPath": "C:\\Users\\Betacom\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Betacom\\Documents\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\obj\\",
+        "outputPath": "D:\\GitHub\\world-is-awesome-fun\\www.worldisawesome.fun\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Betacom\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -95,7 +95,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     }
