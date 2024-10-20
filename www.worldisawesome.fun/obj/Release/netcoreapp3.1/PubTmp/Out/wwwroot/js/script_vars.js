@@ -1,7 +1,4 @@
 //const siteUrl = 'https://localhost:5001/';
-//const siteUrl = 'https://192.168.1.223:5001/';
-//const siteUrl = 'http://davidemurro-001-site1.htempurl.com/';
-//const siteUrl = 'https://www.worldisawesome.fun/';
 const siteUrl = window.location.origin + "/";
 const apiUri = siteUrl + 'Api/';
 const viewUri = siteUrl + 'View/';

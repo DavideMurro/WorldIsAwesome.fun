@@ -521,6 +521,10 @@ body
     justify-content: flex-end;
     text-align: right;
 }
+body:not(.viewmyplaces, .viewglobalplaces, .viewexperiencestodo) 
+#changetype-button {
+    display: none !important;
+}
 body 
 #changetype-button .icon,
 body 

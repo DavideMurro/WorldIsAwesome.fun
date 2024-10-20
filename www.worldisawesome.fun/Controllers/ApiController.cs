@@ -606,10 +606,12 @@ namespace www.worldisawesome.fun.Controllers
                     var smtpServer = new SmtpClient(SMTPMail_Server, SMTPMail_Port);
                     smtpServer.Credentials = new System.Net.NetworkCredential(SMTPMail_Username, SMTPMail_Passwrod);
                     smtpServer.EnableSsl = SMTPMail_IsSSL;
+                    var mailMessageFrom = "info@worldisawesome.fun";
+                    var mailMessageSubject = "World is Awesome - Registration";
                     MailMessage mail = new MailMessage();
-                    mail.From = new MailAddress("info@worldisawesome.fun");
+                    mail.From = new MailAddress(mailMessageFrom);
                     mail.To.Add(user.Mail);
-                    mail.Subject = "World is Awesome - Registration";
+                    mail.Subject = mailMessageSubject;
                     mail.IsBodyHtml = true;
                     mail.Body = "The registration is completed! Now click this link for activate your account and start to use www.worldisawesome.fun";
                     mail.Body += "<br/><br/>";

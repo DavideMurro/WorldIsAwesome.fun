@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>www.worldisawesome.fun</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>Web Deploy</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\GitHub\world-is-awesome-fun\www.worldisawesome.fun\Properties\PublishProfiles\FTPProfile.pubxml</NameOfLastUsedPublishProfile>
     <Controller_SelectedScaffolderID>MvcControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Controller</Controller_SelectedScaffolderCategoryPath>
     <WebStackScaffolding_ControllerDialogWidth>600</WebStackScaffolding_ControllerDialogWidth>
