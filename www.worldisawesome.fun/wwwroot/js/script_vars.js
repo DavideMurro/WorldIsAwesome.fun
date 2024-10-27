@@ -309,19 +309,23 @@ async function searchLocation(containerId, onSelectCallback) {
     if (searchRemoveButton) searchRemoveButton.classList.add("d-none");
 
     try {
-
-        let response = await fetch("https://api.teleport.org/api/cities/?search=" + placeAutocomplete.value/* + "&limit=5"*/);
+        let response = await fetch("https://photon.komoot.io/api/?q=" + placeAutocomplete.value + "&layer=county&limit=50");
         data = await response.json();
 
-        if (data._embedded["city:search-results"].length <= 0) {
+        if (data.features.length <= 0) {
             resultContainer.innerHTML = "<small class='search-noresult'>No results! Where did you go??</small>";
         } else {
             resultContainer.innerHTML = "";
-            data._embedded["city:search-results"].forEach((result, index) => {
+            data.features.forEach((result, index) => {
+                let resultValue = {
+                    name: result.properties.country + ", " + result.properties.state + ", " + result.properties.name,
+                    latitude: result.geometry.coordinates[1].toFixed(8),
+                    longitude: result.geometry.coordinates[0].toFixed(8),
+                };
                 let item = document.createElement("label");
                 item.setAttribute("for", "search-result-location" + index);
                 item.className = "search-result";
-                item.innerHTML = "<input type='radio' name='search-result-location' id='search-result-location" + index + "' value='" + result._links["city:item"].href + "' >" + result.matching_full_name;
+                item.innerHTML = "<input type='radio' name='search-result-location' id='search-result-location" + index + "' value='" + JSON.stringify(resultValue) + "' >" + resultValue.name;
                 item.addEventListener("change", (e) => { selectResultLocation(e.target, containerId, onSelectCallback) });
                 resultContainer.appendChild(item);
             });

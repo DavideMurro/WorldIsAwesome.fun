@@ -209,13 +209,12 @@ async function experienceSubmitClick(isDraft = false) {
 
             // check place
             if (placeRadio && placeRadio.value) {
-                let response = await fetch(placeRadio.value);
-                placeDetail = await response.json();
+                placeDetail = JSON.parse(placeRadio.value);
 
-                placeName = placeDetail.full_name;
+                placeName = placeDetail.name;
                 placeDescription = "";
-                placeLatitude = placeDetail.location.latlon.latitude;
-                placeLongitude = placeDetail.location.latlon.longitude;
+                placeLatitude = placeDetail.latitude;
+                placeLongitude = placeDetail.longitude;
             }
 
             // check file
